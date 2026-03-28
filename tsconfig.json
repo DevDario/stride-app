@@ -2,19 +2,30 @@
   "extends": "expo/tsconfig.base",
   "compilerOptions": {
     "strict": true,
+    "baseUrl": ".",
     "paths": {
-      "@/*": [
-        "./src/*"
+      "@components/*": [
+        "src/components/*"
       ],
-      "@/assets/*": [
-        "./assets/*"
+      "@screens/*": [
+        "src/features/*"
+      ],
+      "@hooks/*": [
+        "src/hooks/*"
+      ],
+      "@store/*": [
+        "src/store/*"
+      ],
+      "@utils/*": [
+        "src/utils/*"
+      ],
+      "@api/*": [
+        "src/services/api/*"
       ]
     }
   },
   "include": [
     "**/*.ts",
-    "**/*.tsx",
-    ".expo/types/**/*.ts",
-    "expo-env.d.ts"
+    "**/*.tsx"
   ]
 }
