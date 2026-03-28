@@ -1,0 +1,5 @@
+appId: com.dariosilva.strideapp
+---
+- launchApp:
+    clearState: true
+- tapOn: "Reload User"
