@@ -26,9 +26,16 @@ export const Avatar: React.FC<AvatarProps> = ({ uri, initials, size = 48 }) => {
       ]}
     >
       {uri ? (
-        <Image source={{ uri }} style={{ width: size, height: size, borderRadius: size / 2 }} />
+        <Image
+          source={{ uri }}
+          style={{ width: size, height: size, borderRadius: size / 2 }}
+        />
       ) : (
-        <Text variant="body" weight="medium" style={{ color: colors.textSecondary }}>
+        <Text
+          variant="body"
+          weight="medium"
+          style={{ color: colors.textSecondary }}
+        >
           {initials?.substring(0, 2).toUpperCase()}
         </Text>
       )}

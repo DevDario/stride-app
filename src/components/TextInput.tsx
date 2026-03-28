@@ -1,5 +1,10 @@
 import React from 'react';
-import { TextInput as RNTextInput, TextInputProps as RNTextInputProps, View, StyleSheet } from 'react-native';
+import {
+  TextInput as RNTextInput,
+  TextInputProps as RNTextInputProps,
+  View,
+  StyleSheet,
+} from 'react-native';
 import { Text } from './Text';
 import { useTheme } from '../theme/ThemeProvider';
 
@@ -9,12 +14,22 @@ export interface TextInputProps extends RNTextInputProps {
   helperText?: string;
 }
 
-export const TextInput: React.FC<TextInputProps> = ({ label, error, helperText, style, ...rest }) => {
+export const TextInput: React.FC<TextInputProps> = ({
+  label,
+  error,
+  helperText,
+  style,
+  ...rest
+}) => {
   const { colors, spacing, radii, typography } = useTheme();
 
   return (
     <View style={{ marginBottom: spacing.md }}>
-      {label && <Text weight="medium" style={{ marginBottom: spacing.xs }}>{label}</Text>}
+      {label && (
+        <Text weight="medium" style={{ marginBottom: spacing.xs }}>
+          {label}
+        </Text>
+      )}
       <RNTextInput
         style={[
           styles.input,
@@ -32,8 +47,24 @@ export const TextInput: React.FC<TextInputProps> = ({ label, error, helperText, 
         placeholderTextColor={colors.textSecondary}
         {...rest}
       />
-      {error && <Text color="danger" variant="caption" style={{ marginTop: spacing.xs }}>{error}</Text>}
-      {!error && helperText && <Text color="textSecondary" variant="caption" style={{ marginTop: spacing.xs }}>{helperText}</Text>}
+      {error && (
+        <Text
+          color="danger"
+          variant="caption"
+          style={{ marginTop: spacing.xs }}
+        >
+          {error}
+        </Text>
+      )}
+      {!error && helperText && (
+        <Text
+          color="textSecondary"
+          variant="caption"
+          style={{ marginTop: spacing.xs }}
+        >
+          {helperText}
+        </Text>
+      )}
     </View>
   );
 };

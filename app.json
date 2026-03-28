@@ -5,10 +5,7 @@
   "ios": {
     "bundleIdentifier": "com.dariosilva.strideapp"
   },
-  "plugins": [
-    "expo-localization",
-    "expo-router"
-  ],
+  "plugins": ["expo-localization", "expo-router"],
   "extra": {
     "router": {},
     "eas": {

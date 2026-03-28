@@ -4,7 +4,13 @@ import { useTheme } from '../theme/ThemeProvider';
 
 export interface TextProps extends RNTextProps {
   variant?: 'h1' | 'h2' | 'h3' | 'body' | 'caption';
-  color?: 'primary' | 'secondary' | 'text' | 'textSecondary' | 'danger' | 'background';
+  color?:
+    | 'primary'
+    | 'secondary'
+    | 'text'
+    | 'textSecondary'
+    | 'danger'
+    | 'background';
   weight?: 'regular' | 'medium' | 'bold';
 }
 
@@ -19,11 +25,16 @@ export const Text: React.FC<TextProps> = ({
 
   const getFontSize = () => {
     switch (variant) {
-      case 'h1': return typography.sizes.xxl;
-      case 'h2': return typography.sizes.xl;
-      case 'h3': return typography.sizes.lg;
-      case 'caption': return typography.sizes.sm;
-      default: return typography.sizes.md;
+      case 'h1':
+        return typography.sizes.xxl;
+      case 'h2':
+        return typography.sizes.xl;
+      case 'h3':
+        return typography.sizes.lg;
+      case 'caption':
+        return typography.sizes.sm;
+      default:
+        return typography.sizes.md;
     }
   };
 

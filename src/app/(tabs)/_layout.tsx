@@ -1,6 +1,6 @@
 import { Tabs } from 'expo-router';
 import { useTheme } from '../../theme/ThemeProvider';
-import { Home } from "lucide-react-native"
+import { Home } from 'lucide-react-native';
 
 export default function TabsLayout() {
   const { colors } = useTheme();
@@ -25,10 +25,8 @@ export default function TabsLayout() {
         options={{
           title: 'Home',
           tabBarIcon: ({ color, size }) => {
-            return (
-              <Home size={size} color={color} />
-            )
-          }
+            return <Home size={size} color={color} />;
+          },
         }}
       />
     </Tabs>

@@ -15,9 +15,13 @@ interface ThemeContextValue {
 
 const ThemeContext = createContext<ThemeContextValue | undefined>(undefined);
 
-export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => {
   const scheme = useColorScheme();
-  const [theme, setTheme] = useState<Theme>(scheme === 'dark' ? 'dark' : 'light');
+  const [theme, setTheme] = useState<Theme>(
+    scheme === 'dark' ? 'dark' : 'light'
+  );
 
   useEffect(() => {
     setTheme(scheme === 'dark' ? 'dark' : 'light');
@@ -35,7 +39,9 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     typography: tokens.typography,
   };
 
-  return <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>;
+  return (
+    <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>
+  );
 };
 
 export const useTheme = () => {

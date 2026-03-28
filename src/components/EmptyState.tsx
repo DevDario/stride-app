@@ -16,7 +16,11 @@ export const EmptyState: React.FC<EmptyStateProps> = ({ title, message }) => {
   return (
     <View style={[styles.container, { padding: spacing.xl }]}>
       <Image source={mascot} style={styles.image} resizeMode="contain" />
-      <Text variant="h3" weight="bold" style={{ marginBottom: spacing.sm, ...styles.centerText }}>
+      <Text
+        variant="h3"
+        weight="bold"
+        style={{ marginBottom: spacing.sm, ...styles.centerText }}
+      >
         {title}
       </Text>
       {message && (

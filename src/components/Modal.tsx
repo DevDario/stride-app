@@ -1,5 +1,10 @@
 import React from 'react';
-import { Modal as RNModal, View, TouchableWithoutFeedback, StyleSheet } from 'react-native';
+import {
+  Modal as RNModal,
+  View,
+  TouchableWithoutFeedback,
+  StyleSheet,
+} from 'react-native';
 import { useTheme } from '../theme/ThemeProvider';
 
 export interface ModalProps {
@@ -9,13 +14,23 @@ export interface ModalProps {
   position?: 'center' | 'bottom';
 }
 
-export const Modal: React.FC<ModalProps> = ({ visible, onClose, children, position = 'bottom' }) => {
+export const Modal: React.FC<ModalProps> = ({
+  visible,
+  onClose,
+  children,
+  position = 'bottom',
+}) => {
   const { colors, radii, spacing } = useTheme();
 
   const isBottom = position === 'bottom';
 
   return (
-    <RNModal visible={visible} transparent animationType={isBottom ? 'slide' : 'fade'} onRequestClose={onClose}>
+    <RNModal
+      visible={visible}
+      transparent
+      animationType={isBottom ? 'slide' : 'fade'}
+      onRequestClose={onClose}
+    >
       <TouchableWithoutFeedback onPress={onClose}>
         <View style={styles.overlay}>
           <TouchableWithoutFeedback>
@@ -33,7 +48,11 @@ export const Modal: React.FC<ModalProps> = ({ visible, onClose, children, positi
                 },
               ]}
             >
-              {isBottom && <View style={[styles.handle, { backgroundColor: colors.border }]} />}
+              {isBottom && (
+                <View
+                  style={[styles.handle, { backgroundColor: colors.border }]}
+                />
+              )}
               {children}
             </View>
           </TouchableWithoutFeedback>

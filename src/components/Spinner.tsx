@@ -6,9 +6,12 @@ export interface SpinnerProps extends ActivityIndicatorProps {
   color?: 'primary' | 'secondary' | 'danger' | 'text' | 'background';
 }
 
-export const Spinner: React.FC<SpinnerProps> = ({ color = 'primary', ...rest }) => {
+export const Spinner: React.FC<SpinnerProps> = ({
+  color = 'primary',
+  ...rest
+}) => {
   const { colors } = useTheme();
-  
+
   const spinnerColor = colors[color] || colors.primary;
   return <ActivityIndicator color={spinnerColor} {...rest} />;
 };

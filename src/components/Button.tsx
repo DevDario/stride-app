@@ -1,5 +1,10 @@
 import React from 'react';
-import { TouchableOpacity, TouchableOpacityProps, StyleSheet, View } from 'react-native';
+import {
+  TouchableOpacity,
+  TouchableOpacityProps,
+  StyleSheet,
+  View,
+} from 'react-native';
 import { useTheme } from '../theme/ThemeProvider';
 import { Text } from './Text';
 import { Spinner } from './Spinner';
@@ -27,7 +32,11 @@ export const Button: React.FC<ButtonProps> = ({
     return colors.primary;
   };
 
-  const getTextColor = (): 'background' | 'primary' | 'secondary' | 'danger' => {
+  const getTextColor = ():
+    | 'background'
+    | 'primary'
+    | 'secondary'
+    | 'danger' => {
     if (variant === 'ghost') return 'primary';
     return 'background';
   };

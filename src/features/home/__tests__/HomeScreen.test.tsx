@@ -18,12 +18,12 @@ describe('HomeScreen', () => {
 
   it('renders default greeting and handles loading correctly', () => {
     render(<HomeScreen />);
-    
+
     expect(screen.getByText('Welcome to Flit App!')).toBeTruthy();
-    
+
     expect(screen.getByText('Guest')).toBeTruthy();
     expect(screen.getByText('No Role')).toBeTruthy();
-    
+
     const reloadButton = screen.getByText('Reload User');
     fireEvent.press(reloadButton);
   });

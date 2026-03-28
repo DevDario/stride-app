@@ -16,7 +16,9 @@ apiClient.interceptors.request.use(
     }
 
     if (__DEV__) {
-      console.log(`[API Request] ${config.method?.toUpperCase()} ${config.url}`);
+      console.log(
+        `[API Request] ${config.method?.toUpperCase()} ${config.url}`
+      );
     }
     return config;
   },
@@ -37,20 +39,25 @@ apiClient.interceptors.response.use(
       try {
         const refreshToken = storage.getString('refresh_token');
         if (!refreshToken) throw new Error('No refresh token');
-        
-        const { data } = await axios.post('https://api.flitapp.com/auth/refresh', { refresh_token: refreshToken });
+
+        const { data } = await axios.post(
+          'https://api.flitapp.com/auth/refresh',
+          { refresh_token: refreshToken }
+        );
         storage.set('auth_token', data.token);
-        apiClient.defaults.headers.common['Authorization'] = `Bearer ${data.token}`;
+        apiClient.defaults.headers.common['Authorization'] =
+          `Bearer ${data.token}`;
         return apiClient(originalRequest);
       } catch (refreshError) {
-  
         storage.delete('auth_token');
         storage.delete('refresh_token');
         return Promise.reject(error);
       }
     }
 
-    const customError = new Error(error.response?.data?.message || error.message);
+    const customError = new Error(
+      error.response?.data?.message || error.message
+    );
     return Promise.reject(customError);
   }
 );

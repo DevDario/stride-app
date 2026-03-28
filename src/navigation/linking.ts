@@ -5,9 +5,9 @@ export const linking = {
       '(tabs)': {
         path: '',
         screens: {
-          home: 'home'
-        }
-      }
-    }
-  }
+          home: 'home',
+        },
+      },
+    },
+  },
 };

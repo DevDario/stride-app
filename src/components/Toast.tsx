@@ -11,7 +11,13 @@ export interface ToastProps {
   duration?: number;
 }
 
-export const Toast: React.FC<ToastProps> = ({ message, type = 'info', visible, onHide, duration = 3000 }) => {
+export const Toast: React.FC<ToastProps> = ({
+  message,
+  type = 'info',
+  visible,
+  onHide,
+  duration = 3000,
+}) => {
   const { colors, spacing, radii } = useTheme();
   const translateY = useRef(new Animated.Value(-100)).current;
 
