@@ -8,5 +8,13 @@
   "plugins": [
     "expo-localization",
     "expo-router"
-  ]
+  ],
+  "extra": {
+    "router": {},
+    "eas": {
+      "projectId": "575739ba-94aa-48e9-bc6a-0251f70cde94"
+    }
+  },
+  "owner": "dariosilva",
+  "slug": "stride"
 }
