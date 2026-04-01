@@ -1,56 +1,37 @@
-import React from 'react';
-import { Text as RNText, TextProps as RNTextProps } from 'react-native';
-import { useTheme } from '../theme/ThemeProvider';
+import { Text as RNText, TextProps as RNTextProps } from 'react-native'
+import { cn } from '@utils/cn'
 
-export interface TextProps extends RNTextProps {
-  variant?: 'h1' | 'h2' | 'h3' | 'body' | 'caption';
-  color?:
-    | 'primary'
-    | 'secondary'
-    | 'text'
-    | 'textSecondary'
-    | 'danger'
-    | 'background';
-  weight?: 'regular' | 'medium' | 'bold';
+type Variant =
+  | 'title-xl'   // Days One — splash, hero screens
+  | 'title-lg'   // Days One — screen headings
+  | 'title-md'   // Days One — section titles
+  | 'body-lg'    // Instrument Sans Regular — large body
+  | 'body'       // Instrument Sans Regular — default
+  | 'body-sm'    // Instrument Sans Regular — captions
+  | 'label'      // Instrument Sans SemiBold — labels, chips
+  | 'button'     // Instrument Sans Bold — button text
+
+interface TextProps extends RNTextProps {
+  variant?: Variant
+  className?: string
 }
 
-export const Text: React.FC<TextProps> = ({
-  variant = 'body',
-  color = 'text',
-  weight = 'regular',
-  style,
-  ...rest
-}) => {
-  const { colors, typography } = useTheme();
+const variantClasses: Record<Variant, string> = {
+  'title-xl': 'font-title text-5xl text-neutral-900',
+  'title-lg': 'font-title text-4xl text-neutral-900',
+  'title-md': 'font-title text-2xl text-neutral-900',
+  'body-lg': 'font-sans text-lg text-neutral-700',
+  'body': 'font-sans text-base text-neutral-700',
+  'body-sm': 'font-sans text-sm text-neutral-500',
+  'label': 'font-sans-semi text-sm text-neutral-800',
+  'button': 'font-sans-bold text-base text-neutral-0',
+}
 
-  const getFontSize = () => {
-    switch (variant) {
-      case 'h1':
-        return typography.sizes.xxl;
-      case 'h2':
-        return typography.sizes.xl;
-      case 'h3':
-        return typography.sizes.lg;
-      case 'caption':
-        return typography.sizes.sm;
-      default:
-        return typography.sizes.md;
-    }
-  };
-
-  const getWeight = () => typography.weights[weight] as any;
-
+export function Text({ variant = 'body', className, ...props }: TextProps) {
   return (
     <RNText
-      style={[
-        {
-          fontSize: getFontSize(),
-          fontWeight: getWeight(),
-          color: colors[color as keyof typeof colors] || colors.text,
-        },
-        style,
-      ]}
-      {...rest}
+      className={cn(variantClasses[variant], className)}
+      {...props}
     />
-  );
-};
+  )
+}

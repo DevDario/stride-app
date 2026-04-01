@@ -1,4 +1,4 @@
-import React from 'react';
+import * as React from 'react';
 import {
   TextInput as RNTextInput,
   TextInputProps as RNTextInputProps,
@@ -26,7 +26,7 @@ export const TextInput: React.FC<TextInputProps> = ({
   return (
     <View style={{ marginBottom: spacing.md }}>
       {label && (
-        <Text weight="medium" style={{ marginBottom: spacing.xs }}>
+        <Text style={{ marginBottom: spacing.xs }}>
           {label}
         </Text>
       )}
@@ -49,8 +49,8 @@ export const TextInput: React.FC<TextInputProps> = ({
       />
       {error && (
         <Text
-          color="danger"
-          variant="caption"
+          className='text-danger'
+          variant="body"
           style={{ marginTop: spacing.xs }}
         >
           {error}
@@ -58,8 +58,8 @@ export const TextInput: React.FC<TextInputProps> = ({
       )}
       {!error && helperText && (
         <Text
-          color="textSecondary"
-          variant="caption"
+          className='text-danger'
+          variant="body"
           style={{ marginTop: spacing.xs }}
         >
           {helperText}
