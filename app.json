@@ -1,17 +1,63 @@
 {
-  "android": {
-    "package": "com.dariosilva.strideapp"
-  },
-  "ios": {
-    "bundleIdentifier": "com.dariosilva.strideapp"
-  },
-  "plugins": ["expo-localization", "expo-router"],
-  "extra": {
-    "router": {},
-    "eas": {
-      "projectId": "575739ba-94aa-48e9-bc6a-0251f70cde94"
-    }
-  },
-  "owner": "dariosilva",
-  "slug": "stride"
+  "expo": {
+    "name": "Stride",
+    "slug": "stride",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle":"light",
+    "scheme": "strideapp",
+    "platforms": ["android", "ios"],
+    "android": {
+      "package": "com.dariosilva.strideapp",
+      "adaptiveIcon": {
+        "foregroundImage": "./src/assets/images/adaptive-icon.png",
+        "backgroundColor": "#FFFFFF"
+      }
+    },
+    "ios": {
+      "bundleIdentifier": "com.dariosilva.strideapp"
+    },
+    "splash": {
+      "image": "./src/assets/images/splash-screen.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#43917F"
+    },
+    "plugins": [
+      "expo-localization",
+      "expo-router",
+      "@clerk/expo",
+      "expo-secure-store",
+      [
+        "expo-font",
+        {
+          "fonts": [
+            "./src/assets/fonts/DaysOne-Regular.ttf",
+            "./src/assets/fonts/InstrumentSans-Regular.ttf",
+            "./src/assets/fonts/InstrumentSans-Medium.ttf",
+            "./src/assets/fonts/InstrumentSans-SemiBold.ttf",
+            "./src/assets/fonts/InstrumentSans-Bold.ttf"
+          ]
+        }
+      ],
+      [
+        "expo-splash-screen", 
+        {
+          "backgroundColor": "#2D9B7F",
+          "image": "./src/assets/images/splash-screen.png",
+          "imageWidth": 230,
+          "imageHeight": 200
+        }
+      ]
+    ],
+    "experiments": {
+      "typedRoutes": true
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "575739ba-94aa-48e9-bc6a-0251f70cde94"
+      }
+    },
+    "owner": "dariosilva"
+  }
 }
