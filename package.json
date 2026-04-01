@@ -12,22 +12,28 @@
     "format": "prettier --write \"src/**/*.{js,jsx,ts,tsx}\"",
     "prepare": "husky",
     "eas:build:dev": "eas build --profile development --platform android --channel development",
-    "eas:update:dev": "eas update --profile development --environment development --channel development"
+    "eas:update:dev": "eas update --profile development --environment development --channel development --branch development"
   },
   "dependencies": {
+    "@clerk/expo": "^3.1.5",
     "@react-navigation/native": "^7.1.28",
     "@tanstack/react-query": "^5.0.0",
     "axios": "^1.7.0",
+    "clsx": "^2.1.1",
     "expo": "~55.0.9",
     "expo-constants": "~55.0.7",
     "expo-dev-client": "~55.0.19",
+    "expo-font": "~55.0.4",
     "expo-linking": "~55.0.9",
     "expo-localization": "~55.0.8",
     "expo-router": "~55.0.8",
+    "expo-secure-store": "~55.0.9",
+    "expo-splash-screen": "~55.0.13",
     "expo-status-bar": "~55.0.4",
+    "expo-system-ui": "~55.0.11",
     "lucide-react-native": "^0.577.0",
-    "nativewind": "^2.0.11",
-    "react": "19.2.0",
+    "nativewind": "^4.2.3",
+    "react": "19.2.4",
     "react-native": "0.83.2",
     "react-native-gesture-handler": "~2.30.0",
     "react-native-mmkv": "^2.12.2",
@@ -36,7 +42,7 @@
     "react-native-screens": "4.23.0",
     "react-native-svg": "15.15.3",
     "react-native-worklets": "0.7.2",
-    "tailwindcss": "3.3.2",
+    "tailwind-merge": "^3.5.0",
     "zustand": "^4.5.2"
   },
   "devDependencies": {
@@ -47,6 +53,7 @@
     "@typescript-eslint/eslint-plugin": "^7.0.0",
     "@typescript-eslint/parser": "^7.0.0",
     "babel-plugin-module-resolver": "^5.0.2",
+    "babel-preset-expo": "^55.0.13",
     "eslint": "^8.57.0",
     "eslint-config-universe": "^12.0.1",
     "eslint-plugin-import": "^2.29.1",
@@ -59,6 +66,7 @@
     "lint-staged": "^15.0.0",
     "msw": "^2.0.0",
     "prettier": "^3.2.5",
+    "tailwindcss": "3.3.2",
     "typescript": "^5.9.3"
   }
 }
