@@ -83,6 +83,7 @@ def jscFlavor = 'io.github.react-native-community:jsc-android:2026004.+'
 
 android {
     kotlinOptions {
+        // Clerk: allow reading metadata from newer Kotlin versions
         freeCompilerArgs += ['-Xskip-metadata-version-check']
     }
     ndkVersion rootProject.ext.ndkVersion
@@ -125,6 +126,7 @@ android {
         }
     }
     packagingOptions {
+        // Clerk Android SDK: exclude duplicate META-INF files
         resources {
             excludes += ['META-INF/versions/9/OSGI-INF/MANIFEST.MF']
         }
