@@ -92,6 +92,9 @@ importers:
       tailwind-merge:
         specifier: ^3.5.0
         version: 3.5.0
+      token-cache:
+        specifier: link:@clerk/clerk-expo/token-cache
+        version: link:@clerk/clerk-expo/token-cache
       zustand:
         specifier: ^4.5.2
         version: 4.5.7(@types/react@19.2.14)(react@19.2.4)
