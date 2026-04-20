@@ -33,7 +33,6 @@ export const Avatar: React.FC<AvatarProps> = ({ uri, initials, size = 48 }) => {
       ) : (
         <Text
           variant="body"
-          weight="medium"
           style={{ color: colors.textSecondary }}
         >
           {initials?.substring(0, 2).toUpperCase()}
