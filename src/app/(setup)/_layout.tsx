@@ -11,7 +11,7 @@ export default function SetupLayout() {
   if (!isSignedIn) return <Redirect href='/(marketing)/splash' />;
 
   if (user?.publicMetadata?.onboardingComplete) {
-    return <Redirect href='/(app)/(tabs)/home' />;
+    return <Redirect href='/(tabs)/home' />;
   }
 
   return (
