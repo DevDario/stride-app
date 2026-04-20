@@ -4,24 +4,13 @@
     "strict": true,
     "baseUrl": ".",
     "paths": {
-      "@components/*": [
-        "src/components/*"
-      ],
-      "@screens/*": [
-        "src/features/*"
-      ],
-      "@hooks/*": [
-        "src/hooks/*"
-      ],
-      "@store/*": [
-        "src/store/*"
-      ],
-      "@utils/*": [
-        "src/utils/*"
-      ],
-      "@api/*": [
-        "src/services/api/*"
-      ]
+      "@components/*": ["src/components/*"],
+      "@screens/*": ["src/features/*"],
+      "@hooks/*": ["src/hooks/*"],
+      "@widgets/*": ["src/widgets/*"],
+      "@store/*": ["src/store/*"],
+      "@utils/*": ["src/utils/*"],
+      "@api/*": ["src/services/api/*"]
     }
   },
   "include": [
