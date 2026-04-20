@@ -9,22 +9,27 @@ export interface EmptyStateProps {
 }
 
 export const EmptyState: React.FC<EmptyStateProps> = ({ title, message }) => {
-  const { spacing } = useTheme();
-  // Image required by scaffolding instructions
+  const { spacing, colors } = useTheme();
   const mascot = require('../assets/images/not-found.png');
 
   return (
     <View style={[styles.container, { padding: spacing.xl }]}>
-      <Image source={mascot} style={styles.image} resizeMode="contain" />
+      <Image source={mascot} style={styles.image} resizeMode='contain' />
       <Text
-        variant="h3"
-        weight="bold"
-        style={{ marginBottom: spacing.sm, ...styles.centerText }}
+        variant='title-md'
+        style={{
+          marginBottom: spacing.sm,
+          textAlign: 'center',
+          color: colors.textSecondary,
+        }}
       >
         {title}
       </Text>
       {message && (
-        <Text color="textSecondary" style={styles.centerText}>
+        <Text
+          variant='body'
+          style={{ textAlign: 'center', color: colors.textSecondary }}
+        >
           {message}
         </Text>
       )}
@@ -42,8 +47,5 @@ const styles = StyleSheet.create({
     width: 200,
     height: 200,
     marginBottom: 20,
-  },
-  centerText: {
-    textAlign: 'center',
   },
 });
