@@ -1,39 +1,32 @@
-import { useEffect } from 'react';
+import { useEffect } from 'react'
+import { useUser } from '@clerk/expo'
 import { useHomeStore } from '../store/homeStore';
 
-const mockFetchUser = async () => {
-  return new Promise<{ name: string; role: string }>((resolve) => {
-    setTimeout(() => {
-      resolve({ name: 'Dario', role: 'Developer' });
-    }, 1000);
-  });
-};
-
 export const useHomeViewModel = () => {
+  const { user: clerkUser, isLoaded } = useUser()
   const { user, isLoading, setUser, setIsLoading } = useHomeStore();
 
-  const fetchUser = async () => {
-    setIsLoading(true);
-    try {
-      const userData = await mockFetchUser();
-      setUser(userData);
-    } catch (error) {
-      console.error('Failed to fetch user', error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
   useEffect(() => {
-    if (!user) {
-      fetchUser();
+    setIsLoading(!isLoaded)
+
+    if (isLoaded && clerkUser) {
+      const runnerProfile = clerkUser.unsafeMetadata?.runnerProfile as any
+
+      setUser({
+        name: clerkUser.firstName ?? 'Runner',
+        level: runnerProfile?.level ?? 'Beginner',
+        avatarUrl: clerkUser.imageUrl,
+        onboardingComplete: !!clerkUser.unsafeMetadata?.onboardingComplete,
+        preferredSchedules: runnerProfile?.preferredSchedules || [],
+      })
+    } else if (isLoaded && !clerkUser) {
+      setUser(null)
     }
-  }, []);
+  }, [isLoaded, clerkUser])
 
   return {
-    greeting: 'Welcome to Flit App!',
+    greeting: user ? `Ready to get moving?` : 'Welcome to Stride!',
     user,
     isLoading,
-    fetchUser,
   };
 };

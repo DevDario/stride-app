@@ -1,8 +1,12 @@
+import { RunSchedule } from '@store/onboardingStore';
 import { create } from 'zustand';
 
 export interface User {
   name: string;
-  role: string;
+  level: string;
+  avatarUrl?: string;
+  onboardingComplete: boolean;
+  preferredSchedules: RunSchedule[]
 }
 
 interface HomeState {
