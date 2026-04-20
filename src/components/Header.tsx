@@ -34,14 +34,14 @@ export const Header: React.FC<HeaderProps> = ({
             onPress={onBack}
             style={{ paddingRight: spacing.sm }}
           >
-            <Text color="primary" weight="medium">
+            <Text variant='label' style={{ color: colors.text }}>
               Back
             </Text>
           </TouchableOpacity>
         )}
       </View>
       <View style={styles.center}>
-        <Text variant="h3" weight="bold">
+        <Text variant='body-sm' style={{ color: colors.text }}>
           {title}
         </Text>
       </View>
