@@ -4,14 +4,17 @@
     "slug": "stride",
     "version": "1.0.0",
     "orientation": "portrait",
-    "userInterfaceStyle":"light",
+    "userInterfaceStyle": "light",
     "scheme": "strideapp",
-    "platforms": ["android", "ios"],
+    "platforms": [
+      "android",
+      "ios"
+    ],
     "android": {
       "package": "com.dariosilva.strideapp",
       "adaptiveIcon": {
         "foregroundImage": "./src/assets/images/adaptive-icon.png",
-        "backgroundColor": "#FFFFFF"
+        "backgroundColor": "#2D9B7F"
       }
     },
     "ios": {
@@ -40,14 +43,15 @@
         }
       ],
       [
-        "expo-splash-screen", 
+        "expo-splash-screen",
         {
           "backgroundColor": "#2D9B7F",
           "image": "./src/assets/images/splash-screen.png",
           "imageWidth": 230,
           "imageHeight": 200
         }
-      ]
+      ],
+      "expo-web-browser"
     ],
     "experiments": {
       "typedRoutes": true
