@@ -1,34 +1,26 @@
-import { Tabs } from 'expo-router';
-import { useTheme } from '../../theme/ThemeProvider';
-import { Home } from 'lucide-react-native';
+import { Tabs } from 'expo-router'
+import { View } from 'react-native'
+import { useTheme } from '../../theme/ThemeProvider'
 
 export default function TabsLayout() {
-  const { colors } = useTheme();
+  const { colors } = useTheme()
 
   return (
-    <Tabs
-      screenOptions={{
-        headerShown: true,
-        tabBarActiveTintColor: colors.primary,
-        tabBarInactiveTintColor: colors.textSecondary,
-        tabBarStyle: {
-          backgroundColor: colors.background,
-        },
-        headerStyle: {
-          backgroundColor: colors.background,
-        },
-        headerTintColor: colors.text,
-      }}
-    >
-      <Tabs.Screen
-        name="home"
-        options={{
-          title: 'Home',
-          tabBarIcon: ({ color, size }) => {
-            return <Home size={size} color={color} />;
-          },
+    <View style={{ flex: 1, backgroundColor: colors.background }}>
+      <Tabs
+        screenOptions={{
+          headerShown: false,
+          tabBarStyle: { backgroundColor: colors.background, borderTopColor: colors.border },
+          tabBarActiveTintColor: colors.primary,
+          tabBarInactiveTintColor: colors.textSecondary,
         }}
-      />
-    </Tabs>
-  );
+      >
+        <Tabs.Screen name="index" options={{ title: 'Home' }} />
+        <Tabs.Screen name="map" options={{ title: 'Map' }} />
+        <Tabs.Screen name="challenges" options={{ title: 'Challenges' }} />
+        <Tabs.Screen name="history" options={{ title: 'History' }} />
+        <Tabs.Screen name="profile" options={{ title: 'Profile' }} />
+      </Tabs>
+    </View>
+  )
 }
