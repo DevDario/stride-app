@@ -5,6 +5,7 @@ type Variant =
   | 'title-xl'   // Days One — splash, hero screens
   | 'title-lg'   // Days One — screen headings
   | 'title-md'   // Days One — section titles
+  | 'title-sm'   // Days One — header titles
   | 'body-lg'    // Instrument Sans Regular — large body
   | 'body'       // Instrument Sans Regular — default
   | 'body-sm'    // Instrument Sans Regular — captions
@@ -19,6 +20,7 @@ interface TextProps extends RNTextProps {
 const variantClasses: Record<Variant, string> = {
   'title-xl': 'font-title text-5xl text-neutral-900',
   'title-lg': 'font-title text-4xl text-neutral-900',
+  'title-sm': 'font-title text-xl text-neutral-900',
   'title-md': 'font-title text-2xl text-neutral-900',
   'body-lg': 'font-sans text-lg text-neutral-700',
   'body': 'font-sans text-base text-neutral-700',
