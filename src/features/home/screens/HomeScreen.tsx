@@ -4,37 +4,40 @@ import { useHomeViewModel } from '../hooks/useHomeViewModel';
 import { Screen } from '@components/Screen';
 import { Header } from '@components/Header';
 import { Text } from '@components/Text';
-import { Button } from '@components/Button';
 import { Card } from '@components/Card';
 import { Avatar } from '@components/Avatar';
 import { useTheme } from '../../../theme/ThemeProvider';
 
+import { Bell, Contrast } from 'lucide-react-native';
+
 export const HomeScreen = () => {
-  const { greeting, user, isLoading, fetchUser } = useHomeViewModel();
+  const { greeting, user } = useHomeViewModel();
   const { spacing } = useTheme();
 
   return (
     <Screen safeArea>
-      <Header title="Home" />
+      {/*header*/}
       <View style={[styles.content, { padding: spacing.lg }]}>
-        <Text variant="h2" weight="bold" style={{ marginBottom: spacing.md }}>
+        <Text variant='body' style={{ marginBottom: spacing.md }}>
           {greeting}
         </Text>
-
-        <Card style={{ marginBottom: spacing.lg }}>
-          <View style={styles.userRow}>
-            <Avatar initials={user?.name || '?'} />
-            <View style={{ marginLeft: spacing.md }}>
-              <Text weight="medium">{user?.name || 'Guest'}</Text>
-              <Text color="textSecondary" variant="caption">
-                {user?.role || 'No Role'}
-              </Text>
-            </View>
-          </View>
-        </Card>
-
-        <Button title="Reload User" loading={isLoading} onPress={fetchUser} />
+        <View className='flex flex-row items-center gap-1'>
+          <Bell className='size-8' />
+          <Contrast className='size-8 invert' />
+        </View>
       </View>
+
+      {/*chart*/}
+      {/*chart end*/}
+
+      {/*calendar widget*/}
+      {/*calendar widget end*/}
+
+      {/*nearby challenges*/}
+      {/*nearby challenges end*/}
+
+      {/*recent runns*/}
+      {/*recent runns end*/}
     </Screen>
   );
 };
@@ -42,9 +45,7 @@ export const HomeScreen = () => {
 const styles = StyleSheet.create({
   content: {
     flex: 1,
-  },
-  userRow: {
-    flexDirection: 'row',
+    justifyContent: 'space-between',
     alignItems: 'center',
   },
 });
