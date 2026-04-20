@@ -12,19 +12,19 @@ export default function WelcomeScreen() {
       <View className='flex-1 items-center justify-center gap-6'>
         <Image
           source={require('../../assets/illustrations/welcome.png')}
-          className='w-64 h-64'
-          resizeMode='contain'
+          className='max-w-full h-full absolute -top-60'
+          resizeMode='cover'
         />
-        <Text variant='title-lg' className='text-center'>
+        <Text variant='title-lg' className='text-center px-6 top-60'>
           Welcome, {firstName}!
         </Text>
-        <Text variant='body' className='text-neutral-500 text-center'>
+        <Text variant='body' className='text-neutral-500 px-6 text-center top-52'>
           Your profile is set. Share your routes, discover challenges, and test
           your limit.
         </Text>
       </View>
 
-      <Button title='Done' onPress={complete} className='w-full' />
+      <Button title='Done' onPress={complete} className='w-full px-6' />
     </View>
   );
 }
