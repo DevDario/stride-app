@@ -1,76 +1,52 @@
-import * as React from 'react';
-import {
-  TextInput as RNTextInput,
-  TextInputProps as RNTextInputProps,
-  View,
-  StyleSheet,
-} from 'react-native';
-import { Text } from './Text';
-import { useTheme } from '../theme/ThemeProvider';
+import { TextInput, TextInputProps, View } from 'react-native';
+import { Text } from '@components/Text';
+import { cn } from '@utils/cn';
 
-export interface TextInputProps extends RNTextInputProps {
+interface StyledTextInputProps extends TextInputProps {
   label?: string;
   error?: string;
-  helperText?: string;
+  helper?: string;
+  className?: string;
 }
 
-export const TextInput: React.FC<TextInputProps> = ({
+export function StyledTextInput({
   label,
   error,
-  helperText,
-  style,
-  ...rest
-}) => {
-  const { colors, spacing, radii, typography } = useTheme();
-
+  helper,
+  className,
+  ...props
+}: StyledTextInputProps) {
   return (
-    <View style={{ marginBottom: spacing.md }}>
+    <View className='gap-1'>
       {label && (
-        <Text style={{ marginBottom: spacing.xs }}>
+        <Text variant='label' className='text-neutral-600 mb-1'>
           {label}
         </Text>
       )}
-      <RNTextInput
-        style={[
-          styles.input,
-          {
-            backgroundColor: colors.surface,
-            borderColor: error ? colors.danger : colors.border,
-            borderRadius: radii.sm,
-            color: colors.text,
-            paddingHorizontal: spacing.sm,
-            paddingVertical: spacing.sm,
-            fontSize: typography.sizes.md,
-          },
-          style,
-        ]}
-        placeholderTextColor={colors.textSecondary}
-        {...rest}
+
+      <TextInput
+        className={cn(
+          'bg-neutral-50 border border-neutral-200 rounded-xl px-4 py-3',
+          'font-sans text-base text-neutral-900',
+          'focus:border-primary-500',
+          error && 'border-error',
+          className
+        )}
+        placeholderTextColor='#a0a0a0'
+        {...props}
       />
+
       {error && (
-        <Text
-          className='text-danger'
-          variant="body"
-          style={{ marginTop: spacing.xs }}
-        >
+        <Text variant='body-sm' className='text-error'>
           {error}
         </Text>
       )}
-      {!error && helperText && (
-        <Text
-          className='text-danger'
-          variant="body"
-          style={{ marginTop: spacing.xs }}
-        >
-          {helperText}
+
+      {helper && !error && (
+        <Text variant='body-sm' className='text-neutral-400'>
+          {helper}
         </Text>
       )}
     </View>
   );
-};
-
-const styles = StyleSheet.create({
-  input: {
-    borderWidth: 1,
-  },
-});
+}
