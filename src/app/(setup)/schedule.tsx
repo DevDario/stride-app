@@ -48,11 +48,11 @@ const SCHEDULES: { value: RunSchedule; label: string; time: string; illustration
 function ActiveIllustration({ selected }: { selected: RunSchedule[] }) {
     const last = selected[selected.length - 1]
     const match = SCHEDULES.find((s) => s.value === last)
-    if (!match) return <View className="w-full h-48 bg-neutral-100 rounded-xl" />
+    if (!match) return <View className="w-full h-96 bg-gray-100 rounded-xl" />
     return (
         <Image
             source={match.illustration}
-            className="w-full h-48 rounded-xl"
+            className="w-full h-[55%] rounded-xl"
             resizeMode="cover"
         />
     )
