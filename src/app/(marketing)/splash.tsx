@@ -1,7 +1,7 @@
+import { Text } from '@components/Text';
 import { useRouter } from 'expo-router';
 import { useEffect } from 'react';
 import { View } from 'react-native';
-import { Text } from '@components/Text';
 
 export default function SplashScreen() {
   const router = useRouter();
