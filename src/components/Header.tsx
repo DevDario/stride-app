@@ -39,12 +39,14 @@ export const Header: React.FC<HeaderProps> = ({
             </Text>
           </TouchableOpacity>
         )}
-      </View>
-      <View style={styles.center}>
-        <Text variant='body-sm' style={{ color: colors.text }}>
+        <Text
+          variant='title-sm'
+          style={{ color: colors.text, textAlign: 'left' }}
+        >
           {title}
         </Text>
       </View>
+
       <View style={styles.right}>{rightElement}</View>
     </View>
   );
@@ -55,10 +57,10 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    borderBottomWidth: 1,
+    height: 80,
   },
   left: {
-    flex: 1,
+    flex: 2,
     alignItems: 'flex-start',
   },
   center: {
