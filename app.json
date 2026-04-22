@@ -6,15 +6,12 @@
     "orientation": "portrait",
     "userInterfaceStyle": "light",
     "scheme": "strideapp",
-    "platforms": [
-      "android",
-      "ios"
-    ],
+    "platforms": ["android", "ios"],
     "android": {
       "package": "com.dariosilva.strideapp",
       "adaptiveIcon": {
         "foregroundImage": "./src/assets/images/adaptive-icon.png",
-        "backgroundColor": "#2D9B7F"
+        "backgroundColor": "#FFF"
       }
     },
     "ios": {
@@ -62,6 +59,10 @@
         "projectId": "575739ba-94aa-48e9-bc6a-0251f70cde94"
       }
     },
-    "owner": "dariosilva"
+    "owner": "dariosilva",
+    "runtimeVersion": "1.0.0",
+    "updates": {
+      "url": "https://u.expo.dev/575739ba-94aa-48e9-bc6a-0251f70cde94"
+    }
   }
 }
