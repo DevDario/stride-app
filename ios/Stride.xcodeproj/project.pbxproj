@@ -18,6 +18,7 @@
 		BA515C59DF4C4D0C94FE2818 /* InstrumentSans-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 543811F37ABE460C91390E03 /* InstrumentSans-Bold.ttf */; };
 		6CD083836350476AA9663961 = {isa = PBXBuildFile; fileRef = EDD974A832034083A684A71A /* ClerkViewFactory.swift */; };
 		1D09096251884079889924DF = {isa = PBXBuildFile; fileRef = 2FFF8673B4DD4E18BE4D0CBE /* ClerkViewFactory.swift */; };
+		45DCC83EFA044ABFAACCF5A6 = {isa = PBXBuildFile; fileRef = 69C4180CB2704A319773C7FC /* ClerkViewFactory.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -36,6 +37,7 @@
 		543811F37ABE460C91390E03 /* InstrumentSans-Bold.ttf */ = {isa = PBXFileReference; name = "InstrumentSans-Bold.ttf"; path = "../src/assets/fonts/InstrumentSans-Bold.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
 		EDD974A832034083A684A71A = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = ClerkViewFactory.swift; path = Stride/ClerkViewFactory.swift; sourceTree = "<group>"; };
 		2FFF8673B4DD4E18BE4D0CBE = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = ClerkViewFactory.swift; path = Stride/ClerkViewFactory.swift; sourceTree = "<group>"; };
+		69C4180CB2704A319773C7FC = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = ClerkViewFactory.swift; path = Stride/ClerkViewFactory.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -60,6 +62,7 @@
 				AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */,
 				EDD974A832034083A684A71A /* ClerkViewFactory.swift */,
 				2FFF8673B4DD4E18BE4D0CBE /* ClerkViewFactory.swift */,
+				69C4180CB2704A319773C7FC /* ClerkViewFactory.swift */,
 			);
 			name = Stride;
 			sourceTree = "<group>";
@@ -151,6 +154,8 @@
 				EA2E72270F0447469A0A5E76 /* ClerkKitUI */,
 				257A1838C0844775A64E3D03 /* ClerkKit */,
 				34402FADA2514240BFD3400C /* ClerkKitUI */,
+				4A4F431921D74E5A8C2E1FF9 /* ClerkKit */,
+				242B88B30509433DABC32735 /* ClerkKitUI */,
 			);
 		};
 /* End PBXNativeTarget section */
@@ -325,6 +330,7 @@ fi
 				F11748422D0307B40044C1D9 /* AppDelegate.swift in Sources */,
 				6CD083836350476AA9663961 /* ClerkViewFactory.swift */,
 				1D09096251884079889924DF /* ClerkViewFactory.swift */,
+				45DCC83EFA044ABFAACCF5A6 /* ClerkViewFactory.swift */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -544,6 +550,14 @@ fi
 				version = 1.0.0;
 			};
 		};
+		E8C4981AC8E649C68C35A5D0 = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = https://github.com/clerk/clerk-ios.git;
+			requirement = {
+				kind = exactVersion;
+				version = 1.0.0;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -565,6 +579,16 @@ fi
 		34402FADA2514240BFD3400C = {
 			isa = XCSwiftPackageProductDependency;
 			package = CAEEDACE83AA4E089CBE550B;
+			productName = ClerkKitUI;
+		};
+		4A4F431921D74E5A8C2E1FF9 = {
+			isa = XCSwiftPackageProductDependency;
+			package = E8C4981AC8E649C68C35A5D0;
+			productName = ClerkKit;
+		};
+		242B88B30509433DABC32735 = {
+			isa = XCSwiftPackageProductDependency;
+			package = E8C4981AC8E649C68C35A5D0;
 			productName = ClerkKitUI;
 		};
 /* End XCSwiftPackageProductDependency section */
