@@ -1,26 +1,62 @@
-import { Tabs } from 'expo-router'
-import { View } from 'react-native'
-import { useTheme } from '../../theme/ThemeProvider'
+import { Tabs } from 'expo-router';
+import { View } from 'react-native';
+import { useTheme } from '../../theme/ThemeProvider';
+import { Flag, Home, Map, User, Watch } from 'lucide-react-native';
 
 export default function TabsLayout() {
-  const { colors } = useTheme()
+  const { colors } = useTheme();
 
   return (
     <View style={{ flex: 1, backgroundColor: colors.background }}>
       <Tabs
         screenOptions={{
           headerShown: false,
-          tabBarStyle: { backgroundColor: colors.background, borderTopColor: colors.border },
+          tabBarStyle: {
+            backgroundColor: colors.background,
+            borderTopColor: colors.border,
+          },
           tabBarActiveTintColor: colors.primary,
           tabBarInactiveTintColor: colors.textSecondary,
         }}
       >
-        <Tabs.Screen name="home" options={{ title: 'Home' }} />
-        <Tabs.Screen name="map" options={{ title: 'Map' }} />
-        <Tabs.Screen name="challenges" options={{ title: 'Challenges' }} />
-        <Tabs.Screen name="history" options={{ title: 'History' }} />
-        <Tabs.Screen name="profile" options={{ title: 'Profile' }} />
+        <Tabs.Screen
+          name='home'
+          options={{
+            title: 'Home',
+            tabBarIcon: ({ size, color }) => <Home size={size} color={color} />,
+          }}
+        />
+        <Tabs.Screen
+          name='map'
+          options={{
+            title: 'Map',
+            tabBarIcon: ({ size, color }) => <Map size={size} color={color} />,
+          }}
+        />
+        <Tabs.Screen
+          name='challenges'
+          options={{
+            title: 'Challenges',
+            tabBarIcon: ({ size, color }) => <Flag size={size} color={color} />,
+          }}
+        />
+        <Tabs.Screen
+          name='history'
+          options={{
+            title: 'History',
+            tabBarIcon: ({ size, color }) => (
+              <Watch size={size} color={color} />
+            ),
+          }}
+        />
+        <Tabs.Screen
+          name='profile'
+          options={{
+            title: 'Profile',
+            tabBarIcon: ({ size, color }) => <User size={size} color={color} />,
+          }}
+        />
       </Tabs>
     </View>
-  )
+  );
 }
