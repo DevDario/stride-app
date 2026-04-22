@@ -11,7 +11,7 @@
       "package": "com.dariosilva.strideapp",
       "adaptiveIcon": {
         "foregroundImage": "./src/assets/images/adaptive-icon.png",
-        "backgroundColor": "#FFF"
+        "backgroundColor": "#FFFFFF"
       }
     },
     "ios": {
