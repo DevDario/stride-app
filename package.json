@@ -11,8 +11,8 @@
     "lint": "eslint src",
     "format": "prettier --write \"src/**/*.{js,jsx,ts,tsx}\"",
     "prepare": "husky",
-    "eas:build:dev": "eas build --profile development --platform android --channel development",
-    "eas:update:dev": "eas update --profile development --environment development --channel development --branch development"
+    "eas:build:dev": "eas build --profile development --platform android",
+    "eas:update:dev": "eas update --profile development --environment development --branch development"
   },
   "dependencies": {
     "@clerk/expo": "^3.1.5",
@@ -24,6 +24,7 @@
     "expo-constants": "~55.0.7",
     "expo-dev-client": "~55.0.19",
     "expo-font": "~55.0.4",
+    "expo-linear-gradient": "~55.0.13",
     "expo-linking": "~55.0.9",
     "expo-localization": "~55.0.8",
     "expo-router": "~55.0.8",
@@ -31,12 +32,14 @@
     "expo-splash-screen": "~55.0.13",
     "expo-status-bar": "~55.0.4",
     "expo-system-ui": "~55.0.11",
+    "expo-updates": "~55.0.21",
     "expo-web-browser": "~55.0.14",
     "lucide-react-native": "^0.577.0",
     "nativewind": "^4.2.3",
     "react": "19.2.4",
     "react-native": "0.83.2",
     "react-native-gesture-handler": "~2.30.0",
+    "react-native-gifted-charts": "^1.4.76",
     "react-native-mmkv": "^2.12.2",
     "react-native-reanimated": "~4.2.1",
     "react-native-safe-area-context": "5.6.2",
