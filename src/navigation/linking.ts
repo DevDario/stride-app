@@ -1,5 +1,5 @@
 export const linking = {
-  prefixes: ['flitapp://', 'https://flitapp.com'],
+  prefixes: ['strideapp://', 'https://strideapp.com'],
   config: {
     screens: {
       '(tabs)': {
