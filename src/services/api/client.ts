@@ -4,7 +4,7 @@ import { MMKV } from 'react-native-mmkv';
 const storage = new MMKV();
 
 export const apiClient = axios.create({
-  baseURL: 'https://api.flitapp.com',
+  baseURL: 'https://api.strideapp.com',
   timeout: 10000,
 });
 
@@ -41,7 +41,7 @@ apiClient.interceptors.response.use(
         if (!refreshToken) throw new Error('No refresh token');
 
         const { data } = await axios.post(
-          'https://api.flitapp.com/auth/refresh',
+          'https://api.strideapp.com/auth/refresh',
           { refresh_token: refreshToken }
         );
         storage.set('auth_token', data.token);
