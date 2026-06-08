@@ -40,6 +40,7 @@
     "react": "19.2.0",
     "react-dom": "19.2.0",
     "react-native": "0.83.6",
+    "react-native-css-interop": "^0.2.3",
     "react-native-gesture-handler": "~2.30.0",
     "react-native-gifted-charts": "^1.4.76",
     "react-native-mmkv": "^2.12.2",
