@@ -9,43 +9,48 @@ import { Avatar } from '@components/Avatar';
 import { useTheme } from '../../../theme/ThemeProvider';
 
 import { Bell, Contrast } from 'lucide-react-native';
+import { Pressable } from 'react-native';
+import { useRouter } from 'expo-router';
+import { WeeklyRunsResume } from '@widgets/WeeklyRunsResume';
 
 export const HomeScreen = () => {
-  const { greeting, user } = useHomeViewModel();
-  const { spacing } = useTheme();
+  const { greeting } = useHomeViewModel();
+  const { spacing, colors } = useTheme();
+  const router = useRouter();
 
   return (
     <Screen safeArea>
       {/*header*/}
-      <View style={[styles.content, { padding: spacing.lg }]}>
-        <Text variant='body' style={{ marginBottom: spacing.md }}>
-          {greeting}
-        </Text>
-        <View className='flex flex-row items-center gap-1'>
-          <Bell className='size-8' />
-          <Contrast className='size-8 invert' />
-        </View>
+      <Header
+        title={'Ready to get moving?'}
+        rightElement={
+          // should go to notifications screen
+          <Pressable onPress={() => router.push('/(tabs)/home')}>
+            <Bell className='size-12' fill={colors.text} />
+          </Pressable>
+        }
+      />
+      <View style={styles.container}>
+        {/*chart*/}
+        <WeeklyRunsResume />
+        {/*chart end*/}
+
+        {/*calendar widget*/}
+        {/*calendar widget end*/}
+
+        {/*nearby challenges*/}
+        {/*nearby challenges end*/}
+
+        {/*recent runns*/}
+        {/*recent runns end*/}
       </View>
-
-      {/*chart*/}
-      {/*chart end*/}
-
-      {/*calendar widget*/}
-      {/*calendar widget end*/}
-
-      {/*nearby challenges*/}
-      {/*nearby challenges end*/}
-
-      {/*recent runns*/}
-      {/*recent runns end*/}
     </Screen>
   );
 };
 
 const styles = StyleSheet.create({
-  content: {
+  container: {
     flex: 1,
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    paddingHorizontal: 12,
   },
 });
