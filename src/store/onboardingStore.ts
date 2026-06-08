@@ -19,7 +19,7 @@ interface OnboardingProfile {
    weeklyFrequency: number
    preferredSchedules: RunSchedule[]
    level: RunnerLevel | null
-}
+}                             
 
 interface OnboardingState {
    profile: OnboardingProfile
