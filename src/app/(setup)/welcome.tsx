@@ -1,7 +1,7 @@
-import { Image, View } from 'react-native';
-import { Text } from '@components/Text';
 import { Button } from '@components/Button';
+import { Text } from '@components/Text';
 import { useOnboardingComplete } from '@hooks/useOnboardingComplete';
+import { Image, View } from 'react-native';
 
 export default function WelcomeScreen() {
   const { complete, profile } = useOnboardingComplete();
@@ -18,7 +18,10 @@ export default function WelcomeScreen() {
         <Text variant='title-lg' className='text-center px-6 top-60'>
           Welcome, {firstName}!
         </Text>
-        <Text variant='body' className='text-neutral-500 px-6 text-center top-52'>
+        <Text
+          variant='body'
+          className='text-neutral-500 px-6 text-center top-52'
+        >
           Your profile is set. Share your routes, discover challenges, and test
           your limit.
         </Text>

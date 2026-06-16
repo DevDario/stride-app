@@ -1,5 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import { StyleSheet, Animated } from 'react-native';
+
 import { Text } from './Text';
 import { useTheme } from '../theme/ThemeProvider';
 
@@ -70,7 +71,7 @@ export const Toast: React.FC<ToastProps> = ({
         },
       ]}
     >
-      <Text color="background" weight="medium">
+      <Text color='background' weight='medium'>
         {message}
       </Text>
     </Animated.View>

@@ -1,5 +1,6 @@
 import React from 'react';
 import { ActivityIndicator, ActivityIndicatorProps } from 'react-native';
+
 import { useTheme } from '../theme/ThemeProvider';
 
 export interface SpinnerProps extends ActivityIndicatorProps {

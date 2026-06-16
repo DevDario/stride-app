@@ -6,7 +6,7 @@ export interface User {
   level: string;
   avatarUrl?: string;
   onboardingComplete: boolean;
-  preferredSchedules: RunSchedule[]
+  preferredSchedules: RunSchedule[];
 }
 
 interface HomeState {

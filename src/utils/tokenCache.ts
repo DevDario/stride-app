@@ -1,18 +1,18 @@
-import * as SecureStore from 'expo-secure-store'
-import type { tokenCache } from '@clerk/expo/token-cache'
+import type { tokenCache } from '@clerk/expo/token-cache';
+import * as SecureStore from 'expo-secure-store';
 
 export const TokenCacheImpl: typeof tokenCache = {
   async getToken(key: string) {
     try {
-      const token = await SecureStore.getItemAsync(key)
+      const token = await SecureStore.getItemAsync(key);
 
       // optional sanity check
-      if (!token) return null
+      if (!token) return null;
 
-      return token
+      return token;
     } catch (err) {
-      console.warn('[TokenCache] getToken error:', err)
-      return null
+      console.warn('[TokenCache] getToken error:', err);
+      return null;
     }
   },
 
@@ -20,17 +20,17 @@ export const TokenCacheImpl: typeof tokenCache = {
     try {
       await SecureStore.setItemAsync(key, value, {
         keychainAccessible: SecureStore.AFTER_FIRST_UNLOCK,
-      })
+      });
     } catch (err) {
-      console.warn('[TokenCache] saveToken error:', err)
+      console.warn('[TokenCache] saveToken error:', err);
     }
   },
 
   async clearToken(key: string) {
     try {
-      await SecureStore.deleteItemAsync(key)
+      await SecureStore.deleteItemAsync(key);
     } catch (err) {
-      console.warn('[TokenCache] clearToken error:', err)
+      console.warn('[TokenCache] clearToken error:', err);
     }
   },
-}
+};

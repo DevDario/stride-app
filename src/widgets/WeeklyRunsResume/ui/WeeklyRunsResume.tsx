@@ -1,7 +1,7 @@
 import { Text } from '@components/Text';
-import { LineChart } from 'react-native-gifted-charts';
 import { ChartNoAxesColumnIncreasing, MapPin } from 'lucide-react-native';
 import { View } from 'react-native';
+import { LineChart } from 'react-native-gifted-charts';
 import { useTheme } from 'src/theme/ThemeProvider';
 
 export default function WeeklyRunsResume() {

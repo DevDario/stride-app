@@ -1,9 +1,9 @@
-import { useRouter } from 'expo-router';
-import { View } from 'react-native';
-import { Text } from '@components/Text';
 import { Button } from '@components/Button';
+import { Text } from '@components/Text';
 import { StyledTextInput } from '@components/TextInput';
 import { useOnboardingStore } from '@store/onboardingStore';
+import { useRouter } from 'expo-router';
+import { View } from 'react-native';
 
 export default function KnowYouScreen() {
   const router = useRouter();

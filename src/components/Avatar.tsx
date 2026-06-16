@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Image, StyleSheet } from 'react-native';
+
 import { Text } from './Text';
 import { useTheme } from '../theme/ThemeProvider';
 
@@ -31,10 +32,7 @@ export const Avatar: React.FC<AvatarProps> = ({ uri, initials, size = 48 }) => {
           style={{ width: size, height: size, borderRadius: size / 2 }}
         />
       ) : (
-        <Text
-          variant="body"
-          style={{ color: colors.textSecondary }}
-        >
+        <Text variant='body' style={{ color: colors.textSecondary }}>
           {initials?.substring(0, 2).toUpperCase()}
         </Text>
       )}

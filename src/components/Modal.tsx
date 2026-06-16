@@ -5,6 +5,7 @@ import {
   TouchableWithoutFeedback,
   StyleSheet,
 } from 'react-native';
+
 import { useTheme } from '../theme/ThemeProvider';
 
 export interface ModalProps {

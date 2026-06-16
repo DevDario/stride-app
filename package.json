@@ -10,7 +10,7 @@
     "test": "jest",
     "lint": "eslint src",
     "format": "prettier --write \"src/**/*.{js,jsx,ts,tsx}\"",
-    "prepare": "husky",
+    "prepare": "husky install",
     "eas:build:dev": "eas build --profile development --platform android",
     "eas:update:dev": "eas update --profile development --environment development --branch development"
   },

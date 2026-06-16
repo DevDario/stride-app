@@ -1,7 +1,6 @@
 import { OnboardSlide } from '@components/onboarding/OnboardSlide';
 
 export default function Onboard4() {
-
   return (
     <OnboardSlide
       headline='Create your own challenges around the city!'

@@ -44,7 +44,7 @@ export default function Select({
         {...props}
         title={title}
       >
-        <option value={''} key={`default-value`}>
+        <option value='' key='default-value'>
           {title}
         </option>
         {options.map((option, idx) => (

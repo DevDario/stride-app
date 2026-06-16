@@ -1,5 +1,6 @@
 import { Stack } from 'expo-router';
 import { View } from 'react-native';
+
 import { useTheme } from '../../theme/ThemeProvider';
 
 export default function MarketingLayout() {

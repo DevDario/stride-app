@@ -1,28 +1,22 @@
-import React from 'react';
-import { View, StyleSheet } from 'react-native';
-import { useHomeViewModel } from '../hooks/useHomeViewModel';
-import { Screen } from '@components/Screen';
 import { Header } from '@components/Header';
-import { Text } from '@components/Text';
-import { Card } from '@components/Card';
-import { Avatar } from '@components/Avatar';
+import { Screen } from '@components/Screen';
+import { WeeklyRunsResume } from '@widgets/WeeklyRunsResume';
+import { useRouter } from 'expo-router';
+import { Bell } from 'lucide-react-native';
+import React from 'react';
+import { View, Pressable, StyleSheet } from 'react-native';
+
 import { useTheme } from '../../../theme/ThemeProvider';
 
-import { Bell, Contrast } from 'lucide-react-native';
-import { Pressable } from 'react-native';
-import { useRouter } from 'expo-router';
-import { WeeklyRunsResume } from '@widgets/WeeklyRunsResume';
-
 export const HomeScreen = () => {
-  const { greeting } = useHomeViewModel();
-  const { spacing, colors } = useTheme();
+  const { colors } = useTheme();
   const router = useRouter();
 
   return (
     <Screen safeArea>
       {/*header*/}
       <Header
-        title={'Ready to get moving?'}
+        title='Ready to get moving?'
         rightElement={
           // should go to notifications screen
           <Pressable onPress={() => router.push('/(tabs)/home')}>

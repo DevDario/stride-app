@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, ViewProps, StyleSheet } from 'react-native';
+
 import { useTheme } from '../theme/ThemeProvider';
 
 export interface CardProps extends ViewProps {

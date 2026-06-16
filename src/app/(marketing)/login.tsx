@@ -1,12 +1,12 @@
 import { useSignIn } from '@clerk/expo';
+import { Button } from '@components/Button';
+import { Text } from '@components/Text';
+import { StyledTextInput } from '@components/TextInput';
 import { useRouter } from 'expo-router';
+import * as WebBrowser from 'expo-web-browser';
+import { ArrowUpRight } from 'lucide-react-native';
 import { useState } from 'react';
 import { View, Pressable } from 'react-native';
-import { Text } from '@components/Text';
-import { Button } from '@components/Button';
-import { ArrowUpRight } from 'lucide-react-native';
-import { StyledTextInput } from '@components/TextInput';
-import * as WebBrowser from 'expo-web-browser';
 
 WebBrowser.maybeCompleteAuthSession();
 

@@ -1,30 +1,38 @@
+import { render } from '@testing-library/react-native';
 import React from 'react';
-import { render, screen, fireEvent } from '@testing-library/react-native';
+
 import { HomeScreen } from '../screens/HomeScreen';
-import { useHomeStore } from '../store/homeStore';
 
 jest.mock('../../../theme/ThemeProvider', () => ({
   useTheme: () => ({
-    colors: { background: '#fff', text: '#000', surface: '#eee' },
-    spacing: { md: 16, lg: 24, xl: 32 },
-    typography: { sizes: { h2: 24 }, weights: { bold: 'bold' } },
+    colors: {
+      background: '#fff',
+      text: '#000',
+      surface: '#eee',
+      border: '#ddd',
+      primary: '#2D9B7F',
+    },
+    spacing: { sm: 8, md: 16, lg: 24, xl: 32 },
+    radii: { md: 8 },
+    typography: { sizes: { lg: 18 }, weights: { bold: '700' } },
+  }),
+}));
+
+jest.mock('@widgets/WeeklyRunsResume', () => ({
+  WeeklyRunsResume: () => <></>,
+}));
+
+jest.mock('../hooks/useHomeViewModel', () => ({
+  useHomeViewModel: () => ({
+    greeting: 'Welcome to Stride!',
+    user: null,
+    isLoading: false,
   }),
 }));
 
 describe('HomeScreen', () => {
-  beforeEach(() => {
-    useHomeStore.setState({ user: null, isLoading: false });
-  });
-
-  it('renders default greeting and handles loading correctly', () => {
-    render(<HomeScreen />);
-
-    expect(screen.getByText('Welcome to Flit App!')).toBeTruthy();
-
-    expect(screen.getByText('Guest')).toBeTruthy();
-    expect(screen.getByText('No Role')).toBeTruthy();
-
-    const reloadButton = screen.getByText('Reload User');
-    fireEvent.press(reloadButton);
+  it('renders the header title', () => {
+    const { getByText } = render(<HomeScreen />);
+    expect(getByText('Ready to get moving?')).toBeTruthy();
   });
 });

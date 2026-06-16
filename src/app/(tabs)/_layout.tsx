@@ -1,7 +1,8 @@
 import { Tabs } from 'expo-router';
-import { View } from 'react-native';
-import { useTheme } from '../../theme/ThemeProvider';
 import { Flag, Home, Map, User, Watch } from 'lucide-react-native';
+import { View } from 'react-native';
+
+import { useTheme } from '../../theme/ThemeProvider';
 
 export default function TabsLayout() {
   const { colors } = useTheme();

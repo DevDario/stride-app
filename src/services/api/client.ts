@@ -4,7 +4,7 @@ import { MMKV } from 'react-native-mmkv';
 const storage = new MMKV();
 
 export const apiClient = axios.create({
-  baseURL: 'https://api.strideapp.com',
+  baseURL: process.env.EXPO_PUBLIC_API_URL || 'https://api.strideapp.com',
   timeout: 10000,
 });
 
@@ -41,14 +41,14 @@ apiClient.interceptors.response.use(
         if (!refreshToken) throw new Error('No refresh token');
 
         const { data } = await axios.post(
-          'https://api.strideapp.com/auth/refresh',
+          `${process.env.EXPO_PUBLIC_API_URL || 'https://api.strideapp.com'}/auth/refresh`,
           { refresh_token: refreshToken }
         );
         storage.set('auth_token', data.token);
         apiClient.defaults.headers.common['Authorization'] =
           `Bearer ${data.token}`;
         return apiClient(originalRequest);
-      } catch (refreshError) {
+      } catch {
         storage.delete('auth_token');
         storage.delete('refresh_token');
         return Promise.reject(error);

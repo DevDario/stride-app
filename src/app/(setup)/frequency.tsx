@@ -1,8 +1,8 @@
+import { Button } from '@components/Button';
+import { Text } from '@components/Text';
+import { useOnboardingStore } from '@store/onboardingStore';
 import { useRouter } from 'expo-router';
 import { View } from 'react-native';
-import { Text } from '@components/Text';
-import { Button } from '@components/Button';
-import { useOnboardingStore } from '@store/onboardingStore';
 import { GestureDetector, Gesture } from 'react-native-gesture-handler';
 import Animated, {
   useSharedValue,

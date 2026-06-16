@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
+
 import { Text } from './Text';
 import { useTheme } from '../theme/ThemeProvider';
 
@@ -23,7 +24,7 @@ export const Badge: React.FC<BadgeProps> = ({ label, color = 'primary' }) => {
         },
       ]}
     >
-      <Text variant="caption" weight="medium" color="background">
+      <Text variant='caption' weight='medium' color='background'>
         {label}
       </Text>
     </View>
