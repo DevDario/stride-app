@@ -11,6 +11,9 @@ node_modules/
 .idea/
 .DS_Store
 
+android/
+ios/
+
 .cursor/
 .cursorrules
 .cursorrules.md
