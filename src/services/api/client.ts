@@ -1,7 +1,4 @@
 import axios from 'axios';
-import { MMKV } from 'react-native-mmkv';
-
-const storage = new MMKV();
 
 export const apiClient = axios.create({
   baseURL: process.env.EXPO_PUBLIC_API_URL || 'https://api.strideapp.com',
@@ -10,11 +7,6 @@ export const apiClient = axios.create({
 
 apiClient.interceptors.request.use(
   (config) => {
-    const token = storage.getString('auth_token');
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
-
     if (__DEV__) {
       console.log(
         `[API Request] ${config.method?.toUpperCase()} ${config.url}`
@@ -32,29 +24,7 @@ apiClient.interceptors.response.use(
     }
     return response;
   },
-  async (error) => {
-    const originalRequest = error.config;
-    if (error.response?.status === 401 && !originalRequest._retry) {
-      originalRequest._retry = true;
-      try {
-        const refreshToken = storage.getString('refresh_token');
-        if (!refreshToken) throw new Error('No refresh token');
-
-        const { data } = await axios.post(
-          `${process.env.EXPO_PUBLIC_API_URL || 'https://api.strideapp.com'}/auth/refresh`,
-          { refresh_token: refreshToken }
-        );
-        storage.set('auth_token', data.token);
-        apiClient.defaults.headers.common['Authorization'] =
-          `Bearer ${data.token}`;
-        return apiClient(originalRequest);
-      } catch {
-        storage.delete('auth_token');
-        storage.delete('refresh_token');
-        return Promise.reject(error);
-      }
-    }
-
+  (error) => {
     const customError = new Error(
       error.response?.data?.message || error.message
     );

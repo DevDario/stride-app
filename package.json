@@ -22,7 +22,9 @@
     "axios": "^1.7.0",
     "clsx": "^2.1.1",
     "expo": "~55.0.17",
+    "expo-auth-session": "~55.0.16",
     "expo-constants": "~55.0.15",
+    "expo-crypto": "~55.0.15",
     "expo-dev-client": "~55.0.28",
     "expo-font": "~55.0.6",
     "expo-linear-gradient": "~55.0.13",
@@ -43,7 +45,7 @@
     "react-native-css-interop": "^0.2.3",
     "react-native-gesture-handler": "~2.30.0",
     "react-native-gifted-charts": "^1.4.76",
-    "react-native-mmkv": "^2.12.2",
+
     "react-native-reanimated": "~4.2.1",
     "react-native-safe-area-context": "5.6.2",
     "react-native-screens": "4.23.0",
@@ -73,6 +75,7 @@
     "jest-expo": "~55.0.16",
     "lint-staged": "^15.0.0",
     "msw": "^2.0.0",
+    "patch-package": "^8.0.1",
     "prettier": "^3.2.5",
     "tailwindcss": "3.3.2",
     "typescript": "^5.9.3"
