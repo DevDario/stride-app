@@ -16,7 +16,7 @@ export function RouteLine({
   return (
     <GeoJSONSource
       id={`${id}-source`}
-      shape={{
+      data={{
         type: 'Feature',
         properties: {},
         geometry: {
@@ -26,14 +26,17 @@ export function RouteLine({
       }}
     >
       <Layer
+        type='line'
         id={`${id}-line`}
-        sourceId={`${id}-source`}
-        style={{
-          lineColor: color,
-          lineWidth: width,
-          lineOpacity: 0.9,
-          lineCap: 'round',
-          lineJoin: 'round',
+        source={`${id}-source`}
+        paint={{
+          'line-color': color,
+          'line-width': width,
+          'line-opacity': 0.9,
+        }}
+        layout={{
+          'line-cap': 'round',
+          'line-join': 'round',
         }}
       />
     </GeoJSONSource>
