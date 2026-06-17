@@ -10,7 +10,9 @@
       "@widgets/*": ["src/widgets/*"],
       "@store/*": ["src/store/*"],
       "@utils/*": ["src/utils/*"],
-      "@api/*": ["src/services/api/*"]
+      "@api/*": ["src/services/api/*"],
+      "@assets/*": ["src/assets/*"],
+      "@illustrations/*": ["src/assets/illustrations/*"]
     }
   },
   "include": [
