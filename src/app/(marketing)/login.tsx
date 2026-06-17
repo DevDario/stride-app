@@ -1,7 +1,8 @@
-import { useSignIn } from '@clerk/expo';
+import { useSignIn, useSSO } from '@clerk/expo';
 import { Button } from '@components/Button';
 import { Text } from '@components/Text';
 import { StyledTextInput } from '@components/TextInput';
+import * as Linking from 'expo-linking';
 import { useRouter } from 'expo-router';
 import * as WebBrowser from 'expo-web-browser';
 import { ArrowUpRight } from 'lucide-react-native';
@@ -10,19 +11,9 @@ import { View, Pressable } from 'react-native';
 
 WebBrowser.maybeCompleteAuthSession();
 
-global.CustomEvent =
-  global.CustomEvent ||
-  class CustomEvent {
-    constructor(event: string, params: any = {}) {
-      this.type = event;
-      this.detail = params.detail || {};
-    }
-    type: string;
-    detail: any;
-  };
-
 export default function LoginScreen() {
   const { signIn, fetchStatus } = useSignIn();
+  const { startSSOFlow } = useSSO();
   const router = useRouter();
 
   const [email, setEmail] = useState('');
@@ -48,11 +39,7 @@ export default function LoginScreen() {
 
     if (signIn.status === 'complete') {
       await signIn.finalize({
-        navigate: ({ decorateUrl }) => {
-          const destination = '/(tabs)';
-          const url = decorateUrl(destination);
-          router.replace(url.startsWith('http') ? url : (destination as any));
-        },
+        navigate: () => router.replace('/(tabs)/home'),
       });
     } else if (signIn.status === 'needs_client_trust') {
       await signIn.mfa.sendEmailCode();
@@ -91,24 +78,27 @@ export default function LoginScreen() {
 
     if (signIn.status === 'complete') {
       await signIn.finalize({
-        navigate: ({ decorateUrl }) => {
-          const destination = '/(tabs)';
-          const url = decorateUrl(destination);
-
-          router.replace(url.startsWith('http') ? url : (destination as any));
-        },
+        navigate: () => router.replace('/(tabs)/home'),
       });
     }
   }
 
   async function handleOAuth(strategy: 'oauth_google' | 'oauth_facebook') {
     setError(null);
-    const { error: oauthError } = await signIn.sso({
-      strategy,
-      redirectUrl: 'strideapp://oauth-callback',
-      redirectCallbackUrl: 'strideapp://oauth-callback',
-    });
-    if (oauthError) setError(oauthError.message);
+    try {
+      const redirectUrl = Linking.createURL('oauth-callback', {
+        scheme: 'strideapp',
+      });
+      const { createdSessionId, setActive } = await startSSOFlow({
+        strategy,
+        redirectUrl,
+      });
+      if (createdSessionId && setActive) {
+        setActive({ session: createdSessionId });
+      }
+    } catch (err: any) {
+      setError(err?.message || 'OAuth failed');
+    }
   }
 
   return (

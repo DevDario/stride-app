@@ -1,7 +1,8 @@
-import { useSignUp } from '@clerk/expo';
+import { useSignUp, useSSO } from '@clerk/expo';
 import { Button } from '@components/Button';
 import { Text } from '@components/Text';
 import { StyledTextInput } from '@components/TextInput';
+import * as Linking from 'expo-linking';
 import { useRouter } from 'expo-router';
 import * as WebBrowser from 'expo-web-browser';
 import { useState } from 'react';
@@ -9,19 +10,9 @@ import { View, Pressable } from 'react-native';
 
 WebBrowser.maybeCompleteAuthSession();
 
-global.CustomEvent =
-  global.CustomEvent ||
-  class CustomEvent {
-    constructor(event: string, params: any = {}) {
-      this.type = event;
-      this.detail = params.detail || {};
-    }
-    type: string;
-    detail: any;
-  };
-
 export default function SignupScreen() {
   const { signUp, fetchStatus } = useSignUp();
+  const { startSSOFlow } = useSSO();
   const router = useRouter();
 
   const [email, setEmail] = useState('');
@@ -67,30 +58,28 @@ export default function SignupScreen() {
 
     if (signUp.status === 'complete') {
       await signUp.finalize({
-        navigate: ({ decorateUrl }) => {
-          const destination = '/(setup)/know-you';
-          const url = decorateUrl(destination);
-
-          router.replace(url.startsWith('http') ? url : (destination as any));
-        },
+        navigate: () => router.replace('/(setup)/know-you'),
       });
     } else {
       setError('Sign-up incomplete. Please check requirements.');
     }
   }
 
-  async function handleOAuth(
-    strategy: 'oauth_google' | 'oauth_apple' | 'oauth_facebook'
-  ) {
+  async function handleOAuth(strategy: 'oauth_google' | 'oauth_facebook') {
     setError(null);
-    const { error: oauthError } = await signUp.sso({
-      strategy,
-      redirectUrl: 'strideapp://oauth-callback',
-      redirectCallbackUrl: 'strideapp://oauth-callback',
-    });
-
-    if (oauthError) {
-      setError(oauthError.message);
+    try {
+      const redirectUrl = Linking.createURL('oauth-callback', {
+        scheme: 'strideapp',
+      });
+      const { createdSessionId, setActive } = await startSSOFlow({
+        strategy,
+        redirectUrl,
+      });
+      if (createdSessionId && setActive) {
+        setActive({ session: createdSessionId });
+      }
+    } catch (err: any) {
+      setError(err?.message || 'OAuth failed');
     }
   }
 
@@ -171,12 +160,6 @@ export default function SignupScreen() {
             <Button
               title='Continue with Facebook'
               onPress={() => handleOAuth('oauth_facebook')}
-              loading={isLoading}
-              variant='secondary'
-            />
-            <Button
-              title='Continue with Apple'
-              onPress={() => handleOAuth('oauth_apple')}
               loading={isLoading}
               variant='secondary'
             />

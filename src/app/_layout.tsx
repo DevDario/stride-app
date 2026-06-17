@@ -1,5 +1,6 @@
 import '../../global.css';
-import { ClerkProvider, useAuth } from '@clerk/expo';
+import '../lib/polyfills';
+import { ClerkProvider, useAuth, useUser } from '@clerk/expo';
 import { tokenCache } from '@clerk/expo/token-cache';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import * as Font from 'expo-font';
@@ -18,6 +19,7 @@ SplashScreen.preventAutoHideAsync();
 
 function AuthGuard() {
   const { isLoaded, isSignedIn } = useAuth();
+  const { user } = useUser();
   const { colors } = useTheme();
   const segments = useSegments();
   const router = useRouter();
@@ -35,9 +37,11 @@ function AuthGuard() {
     }
 
     if (isSignedIn && inMarketing) {
-      router.replace('/(setup)/know-you');
+      const onboardingComplete =
+        user?.unsafeMetadata?.onboardingComplete === true;
+      router.replace(onboardingComplete ? '/(tabs)/home' : '/(setup)/know-you');
     }
-  }, [isLoaded, isSignedIn, segments]);
+  }, [isLoaded, isSignedIn, user, segments]);
 
   if (!isLoaded) {
     return (
