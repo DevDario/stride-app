@@ -7,6 +7,7 @@ import {
   PressableProps,
   View,
 } from 'react-native';
+import { useTheme } from 'src/theme/ThemeProvider';
 
 type Variant = 'primary' | 'secondary' | 'ghost' | 'danger';
 
@@ -44,6 +45,7 @@ export function Button({
   ...props
 }: ButtonProps) {
   const isDisabled = disabled || loading;
+  const { colors } = useTheme();
 
   return (
     <Pressable
@@ -52,7 +54,8 @@ export function Button({
       className={cn(
         containerVariants[variant],
         isDisabled && 'opacity-50',
-        className
+        className,
+        'align-center'
       )}
       {...props}
     >
@@ -60,28 +63,28 @@ export function Button({
         <ActivityIndicator
           color={
             variant === 'primary' || variant === 'danger'
-              ? '#ffffff'
-              : '#2D9B7F'
+              ? colors.background
+              : colors.primary
           }
         />
       ) : (
-        <View className='flex items-center gap-1'>
+        <View className='flex items-center align-center gap-1'>
           {Icon ? (
             <View
               className={cn('flex-row items-center gap-2', title ? 'mt-1' : '')}
             >
-              <Icon
-                size={20}
-                className={cn(
-                  variant === 'primary' || variant === 'danger'
-                    ? 'text-neutral-0'
-                    : 'text-primary-500'
-                )}
-                strokeWidth={2}
-              />
               <Text variant='button' className={titleVariants[variant]}>
                 {title}
               </Text>
+              <Icon
+                size={20}
+                strokeWidth={2}
+                color={cn(
+                  variant === 'primary' || variant === 'danger'
+                    ? colors.background
+                    : colors.primary
+                )}
+              />
             </View>
           ) : (
             <Text variant='button' className={titleVariants[variant]}>
