@@ -1,22 +1,23 @@
 import { Text } from '@components/Text';
-import { ChartNoAxesColumnIncreasing, MapPin } from 'lucide-react-native';
+import { ChartNoAxesColumnIncreasing, Milestone } from 'lucide-react-native';
 import { View } from 'react-native';
 import { LineChart } from 'react-native-gifted-charts';
 import { useTheme } from 'src/theme/ThemeProvider';
 
 export default function WeeklyRunsResume() {
   const { colors } = useTheme();
-  const lineData = [
-    { value: 0 },
-    { value: 10 },
-    { value: 8 },
-    { value: 58 },
-    { value: 56 },
-    { value: 78 },
+  const chartMockData = [
+    { value: 50 },
+    { value: 34 },
+    { value: 45 },
+    { value: 59 },
+    { value: 64 },
     { value: 74 },
-    { value: 98 },
+    { value: 78 },
+    { value: 85 },
+    { value: 93 },
   ];
-
+  //fetch real data about user's weekly activities summary/resume
   return (
     <View className='w-fit rounded-xl bg-zinc-50 h-96 p-4'>
       <View className='flex flex-col items-self gap-2'>
@@ -25,7 +26,7 @@ export default function WeeklyRunsResume() {
         </Text>
         <View className='w-full flex flex-row gap-2 items-center justify-start'>
           <View className='w-10 h-10 bg-primary-500 rounded-sm flex items-center justify-center'>
-            <MapPin color={colors.background} size={22} />
+            <Milestone color={colors.background} size={23} />
           </View>
           <Text className='font-sans-semi text-xl'>34,90 miles</Text>
           <View className='flex flex-row items-center justify-start'>
@@ -43,7 +44,7 @@ export default function WeeklyRunsResume() {
             hideYAxisText
             hideAxesAndRules
             curved
-            data={lineData}
+            data={chartMockData}
             height={100}
             spacing={54}
             initialSpacing={30}
@@ -66,23 +67,22 @@ export default function WeeklyRunsResume() {
                 <Text className='font-bold text-2xl'>248</Text>
                 <Text variant='label'>Kcal</Text>
               </View>
-              <Text variant='body-sm'>calories</Text>
+              <Text variant='body-sm'>Calories</Text>
             </View>
             <View className='w-px h-full bg-red-500 align-center' />
             <View className='flex flex-col justify-start items-center'>
               <View className='flex flex-row items-baseline justify-center'>
-                <Text className='font-bold text-2xl'>248</Text>
-                <Text variant='label'>Kcal</Text>
+                <Text className='font-bold text-2xl'>6,4</Text>
+                <Text variant='label'>m</Text>
               </View>
-              <Text variant='body-sm'>calories</Text>
+              <Text variant='body-sm'>Elevation Gain</Text>
             </View>
             <View className='w-px h-full bg-red-500 align-center' />
             <View className='flex flex-col justify-start items-center'>
               <View className='flex flex-row items-baseline justify-center'>
-                <Text className='font-bold text-2xl'>248</Text>
-                <Text variant='label'>Kcal</Text>
+                <Text className='font-bold text-2xl'>7'29"</Text>
               </View>
-              <Text variant='body-sm'>calories</Text>
+              <Text variant='body-sm'>Avg. Pace</Text>
             </View>
           </View>
         </View>
