@@ -1,10 +1,14 @@
 import { Header } from '@components/Header';
 import { Screen } from '@components/Screen';
+import { Text } from '@components/Text';
+import { CurrentWeekView } from '@widgets/CurrentWeekView';
+import { NearbyChallenges } from '@widgets/NearbyChallenges';
+import { RecentRuns } from '@widgets/RecentRuns';
 import { WeeklyRunsResume } from '@widgets/WeeklyRunsResume';
 import { useRouter } from 'expo-router';
 import { Bell } from 'lucide-react-native';
 import React from 'react';
-import { View, Pressable, StyleSheet } from 'react-native';
+import { ScrollView, Pressable, StyleSheet } from 'react-native';
 
 import { useTheme } from '../../../theme/ThemeProvider';
 
@@ -14,7 +18,6 @@ export const HomeScreen = () => {
 
   return (
     <Screen safeArea>
-      {/*header*/}
       <Header
         title='Ready to get moving?'
         rightElement={
@@ -24,27 +27,42 @@ export const HomeScreen = () => {
           </Pressable>
         }
       />
-      <View style={styles.container}>
-        {/*chart*/}
+      <ScrollView
+        style={styles.scrollView}
+        contentContainerStyle={styles.container}
+        showsVerticalScrollIndicator={false}
+      >
         <WeeklyRunsResume />
-        {/*chart end*/}
 
-        {/*calendar widget*/}
-        {/*calendar widget end*/}
+        <CurrentWeekView />
 
-        {/*nearby challenges*/}
-        {/*nearby challenges end*/}
+        <Text
+          variant='title-md'
+          style={{ color: colors.text, textAlign: 'left' }}
+        >
+          Nearby Challenges
+        </Text>
+        <NearbyChallenges />
 
-        {/*recent runns*/}
-        {/*recent runns end*/}
-      </View>
+        <Text
+          variant='title-md'
+          style={{ color: colors.text, textAlign: 'left' }}
+        >
+          Your recent runs
+        </Text>
+        <RecentRuns />
+      </ScrollView>
     </Screen>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
+  scrollView: {
     flex: 1,
+  },
+  container: {
     paddingHorizontal: 12,
+    gap: 13,
+    paddingBottom: 24,
   },
 });
