@@ -1,4 +1,3 @@
-import { UserLocation } from '@maplibre/maplibre-react-native';
 import { useEffect } from 'react';
 import { View } from 'react-native';
 import Animated, {
@@ -8,6 +7,9 @@ import Animated, {
   withSequence,
   withTiming,
 } from 'react-native-reanimated';
+import { useLocationStore } from 'src/features/map/store/locationStore';
+
+import { MapMarker } from './MapMarker';
 
 const DOT_SIZE = 20;
 const PULSE_SIZE = 50;
@@ -59,8 +61,17 @@ function AnimatedPulse() {
 }
 
 export function UserLocationDot() {
+  const { lastKnownLatitude, lastKnownLongitude } = useLocationStore();
+
+  if (lastKnownLatitude === null || lastKnownLongitude === null) {
+    return null;
+  }
+
   return (
-    <UserLocation>
+    <MapMarker
+      id='user-location'
+      lngLat={[lastKnownLongitude, lastKnownLatitude]}
+    >
       <View
         style={{
           alignItems: 'center',
@@ -81,6 +92,6 @@ export function UserLocationDot() {
           }}
         />
       </View>
-    </UserLocation>
+    </MapMarker>
   );
 }
