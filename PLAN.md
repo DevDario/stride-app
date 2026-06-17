@@ -90,22 +90,51 @@ Auth gating is in `src/app/_layout.tsx` (AuthGuard), `(setup)/_layout.tsx`, and 
 - Created `src/services/map/osrmClient.ts` — Axios client + typed functions for OSRM routes and geocoding
 - Created `src/features/map/store/locationStore.ts` — Zustand store for permission state + last known location
 - Created `src/components/map/PermissionGate.tsx` — permission request flow (foreground + background) with fallback/retry/settings
-- Created `src/components/map/StrideMapView.tsx` — maplibre `Map` wrapper with default Luanda center/zoom
+- Created `src/components/map/MapView.tsx` — maplibre `Map` wrapper with Camera ref, `forwardRef` + `useImperativeHandle` for imperative camera methods
 - Created `src/components/map/MapMarker.tsx` — animated marker with Reanimated scale pulse
 - Created `src/components/map/UserLocationDot.tsx` — custom blue dot with animated accuracy pulse via `UserLocation`
 - Created `src/components/map/AreaOverlay.tsx` — GeoJSON region overlay with color-coded fill/outline (rating 1-5)
 - Created `src/components/map/RouteLine.tsx` — route line from OSRM GeoJSON coordinates
 - Created `src/features/map/hooks/useUserLocation.ts` — permission + GPS tracking hook
 - Created `src/features/map/hooks/useMapRegion.ts` — viewport state management
-- Created `src/features/map/screens/MapScreen.tsx` — orchestrates map with demo Luanda district overlays + back button + recenter button
+- Created `src/features/map/screens/MapScreen.tsx` — orchestrates map with Luanda district overlays + back button + recenter FAB
 - Created `src/app/(tabs)/map.tsx` — route file rendering `MapScreen`
+
+#### Map fixes & refinements
+
+- **Android crash**: Added `androidView="texture"` to Map — GLSurfaceView default caused `onDidFinishLoadingStyle` exception on some devices/emulators
+- **v11 API compliance**: Fixed `shape`→`data` on GeoJSONSource, `style`→`paint` on Layer, added `type` prop on Layer
+- **Map styles**: Created `MAP_STYLES` constant with CARTO dark/light/fallback options; default is `MAP_STYLES.dark`
+- **Recentering**: Exposed `StrideMapViewRef` with `flyTo()` via `forwardRef`; FAB now recenters to user's actual location (falls back to Luanda center if no location known)
+- **Real district overlays**: Replaced 4-point rectangles with actual GeoJSON polygons from Angola ADM3 geoBoundaries — 10 Luanda communes (Ingombota, Samba, Maianga, Kilamba Kiaxi, Rangel, Sambizanga, Cazenga, Viana, Futungo de Belas, Kilamba) with real boundary coordinates
+- **UserLocationDot**: Switched from maplibre `UserLocation` (native engine, broken on emulator) to `MapMarker` + `expo-location` data from `useLocationStore` — works on emulator with mock GPS
+- **Overlay/choropleth logic documented** in AGENTS.md: rendered per location+radius with ≥20 feedbacks, color starts at 2–3 feedbacks (low opacity), fully opaque at 20+. Future merging/adjacency for dense coverage.
+- **District dataset source documented** in AGENTS.md: geoBoundaries ADM3, CC-BY 3.0
 - Tab labels hidden (`tabBarShowLabel: false`)
+
+#### TypeScript fixes
+
+- **Camera ref type**: Changed `useRef<Camera>` → `useRef<any>` (Camera is a component, not a ref type — can't use it as a generic parameter)
+- **onPress removed**: `MapViewProps.onPress` had a custom signature (`{ geometry: { coordinates } }`) that mismatched maplibre's `NativeSyntheticEvent<PressEvent>`; removed since it wasn't being consumed anywhere
+- **RouteLine paint → layout**: Moved `line-cap` and `line-join` from `paint` to `layout` — these are layout properties per the MapLibre style spec, causing `Object literal may only specify known properties` TS error
+
+#### Start button (replaces recenter FAB)
+
+- Removed the Navigation-icon recenter button (bottom-right FAB)
+- Added a centered "Start Run" pill button at the bottom with `Play` icon + label
+- On press: map tilts to 60° pitch over 2s via `StrideMapViewRef.easeTo()`, district overlays smoothly fade out over 1.5s via `requestAnimationFrame`, countdown (3→2→1) plays with animated scale + opacity per number
+- After countdown, `runState` transitions to `'running'` — button, countdown, overlays are gone, map stays tilted
+- `StrideMapViewRef` gained `easeTo(center, zoom?, pitch?, duration?)` for smooth camera transitions
 
 ## To-do
 
-- [ ] Build native app (`pnpm android`) to link `expo-location` + maplibre native modules
-- [ ] Verify map renders with OSM tiles on device/emulator
-- [ ] Add real OSRM route visualization on the map
+- [ ] Test CARTO dark-matter style + user location dot on real device
+- [ ] Add proper AreaOverlay type annotations (labels/legends for district names + ratings)
+- [ ] Add OSRM route visualization on the map
 - [ ] Add challenges overlay layer on the map
 - [ ] Add user run history visualization on the map
 - [ ] Background location tracking for live runs
+- [ ] **Race counter overlay** — create a full-screen timer overlay (screenshot → Claude → prompt → implement)
+- [ ] **Run control buttons** — add pause, stop, and lock buttons at the bottom of the map screen with their respective functionality
+- [ ] **Post-run reset** — after finishing a run, map returns to idle state: pitch goes back to 0, area overlays fade back in, run buttons are replaced by Start button
+- [ ] **Map markers toggle** — add toggle options at the bottom to show/hide different overlay types (districts, challenges, user history, etc.)

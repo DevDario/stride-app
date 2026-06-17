@@ -68,7 +68,7 @@ Open-source: no Google Maps API required.
 
 | Layer         | Library                            | Purpose                                   |
 | ------------- | ---------------------------------- | ----------------------------------------- |
-| Map renderer  | `react-native-maplibre`            | Renders tiles, markers, overlays          |
+| Map renderer  | `@maplibre/maplibre-react-native`  | Renders tiles, markers, overlays          |
 | Routes/search | OSRM (via HTTP or hosted instance) | Route calculation, geocoding              |
 | GPS           | `expo-location`                    | Foreground + background location tracking |
 | Animations    | `react-native-reanimated`          | Smooth UI during tracking, transitions    |
@@ -99,7 +99,7 @@ Open-source: no Google Maps API required.
 | State      | `zustand` + `@tanstack/react-query`                                                                      |
 | Charts     | `react-native-gifted-charts`                                                                             |
 | Animations | `react-native-reanimated` + `react-native-gesture-handler`                                               |
-| Map        | `react-native-maplibre`, `expo-location`, OSRM (HTTP)                                                    |
+| Map        | `@maplibre/maplibre-react-native`, `expo-location`, OSRM (HTTP)                                          |
 
 ## Environment
 
@@ -126,6 +126,10 @@ Profiles: `development` (dev client), `preview` (internal), `production` (auto-i
 - **No jest setup file**
 - **MSW** is a devDependency but not configured
 - **Maestro** E2E at `.maestro/home.yaml`
+
+## Commit policy
+
+Never commit, amend, push, or create PRs unless the user explicitly asks. Stage files only when told. Ask before any git write operation.
 
 ## Pre-commit
 
@@ -157,11 +161,11 @@ Every data-driven widget MUST handle the empty state — never show a blank scre
 src/
   components/
     map/
-      MapView.tsx          # Wrapped maplibre MapView with theme-aware style
+      MapView.tsx          # Wrapped maplibre MapView + Camera ref, forwardRef for flyTo
       MapMarker.tsx        # Reusable marker with animated pulse
-      AreaOverlay.tsx      # GeoJSON region overlay with color-coded rating
+      AreaOverlay.tsx      # Choropleth polygon overlay with color-coded rating (GeoJSON)
       RouteLine.tsx        # Animated route line (OSRM response rendered)
-      UserLocationDot.tsx  # Blue dot with accuracy circle, Reanimated pulse
+      UserLocationDot.tsx  # Blue dot + accuracy ring via MapMarker + expo-location (NOT maplibre UserLocation)
       PermissionGate.tsx   # Location permission request + fallback UI
   services/
     map/
@@ -177,3 +181,27 @@ src/
         locationStore.ts   # Zustand: permission state, last known location
       __tests__/
 ```
+
+## Area overlays (choropleth) logic
+
+AreaOverlay components render **freeform polygon overlays** (choropleth-style) on the map, NOT fixed administrative districts.
+
+### Rendering rules
+
+- An overlay is rendered at a **location + radius** when that area has collected **≥20 user feedbacks** on route conditions
+- The overlay **starts gaining color** at **2–3 feedbacks** with low opacity
+- Color becomes **more vivid/fully opaque** as feedback count approaches and exceeds 20
+- Each overlay shows the **average rating** for that area (1–5 scale)
+
+### Future: merging / adjacency
+
+- When the app has 1000+ active users and dense feedback coverage, adjacent overlays can **merge** or sit **side by side**
+- A green-rated area could directly border a red-rated area — the GeoJSON choropleth layer handles this natively via separate polygon features
+- The rendering approach (separate `AreaOverlay` components per polygon, each with its own `GeoJSONSource` + `Layer`) already supports this: just add more polygons with their own rating/color
+
+### District boundary data source
+
+- Real Luanda commune boundaries (ADM3 level) from **geoBoundaries**: `https://www.geoboundaries.org/api/current/gbOpen/AGO/ADM3/`
+- Direct GeoJSON: `https://github.com/wmgeolab/geoBoundaries/raw/9469f09/releaseData/gbOpen/AGO/ADM3/geoBoundaries-AGO-ADM3_simplified.geojson`
+- 558 communes in Angola, ~10 in Luanda city (Ingombota, Samba, Maianga, Kilamba Kiaxi, Rangel, Sambizanga, Cazenga, Viana, Futungo de Belas, Kilamba)
+- License: Creative Commons Attribution 3.0
