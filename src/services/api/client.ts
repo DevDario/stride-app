@@ -1,7 +1,15 @@
 import axios from 'axios';
 
+const API_URL = process.env.EXPO_PUBLIC_API_URL || 'https://api.strideapp.com';
+
+if (__DEV__ && !process.env.EXPO_PUBLIC_API_URL) {
+  console.warn(
+    '[API] EXPO_PUBLIC_API_URL is not set. Using default: https://api.strideapp.com'
+  );
+}
+
 export const apiClient = axios.create({
-  baseURL: process.env.EXPO_PUBLIC_API_URL || 'https://api.strideapp.com',
+  baseURL: API_URL,
   timeout: 10000,
 });
 
