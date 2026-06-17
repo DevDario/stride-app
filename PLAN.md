@@ -84,11 +84,28 @@ Auth gating is in `src/app/_layout.tsx` (AuthGuard), `(setup)/_layout.tsx`, and 
 - Updated `ui/WeeklyRunsResume.tsx` — consumes hook data instead of hardcoded values; empty state shows `Footprints` icon + "No runs this week yet"
 - Empty state conventions documented in AGENTS.md
 
+### 9. Map infrastructure (DONE)
+
+- Installed `@maplibre/maplibre-react-native` + `expo-location` with app.json plugin configs
+- Created `src/services/map/osrmClient.ts` — Axios client + typed functions for OSRM routes and geocoding
+- Created `src/features/map/store/locationStore.ts` — Zustand store for permission state + last known location
+- Created `src/components/map/PermissionGate.tsx` — permission request flow (foreground + background) with fallback/retry/settings
+- Created `src/components/map/StrideMapView.tsx` — maplibre `Map` wrapper with default Luanda center/zoom
+- Created `src/components/map/MapMarker.tsx` — animated marker with Reanimated scale pulse
+- Created `src/components/map/UserLocationDot.tsx` — custom blue dot with animated accuracy pulse via `UserLocation`
+- Created `src/components/map/AreaOverlay.tsx` — GeoJSON region overlay with color-coded fill/outline (rating 1-5)
+- Created `src/components/map/RouteLine.tsx` — route line from OSRM GeoJSON coordinates
+- Created `src/features/map/hooks/useUserLocation.ts` — permission + GPS tracking hook
+- Created `src/features/map/hooks/useMapRegion.ts` — viewport state management
+- Created `src/features/map/screens/MapScreen.tsx` — orchestrates map with demo Luanda district overlays + back button + recenter button
+- Created `src/app/(tabs)/map.tsx` — route file rendering `MapScreen`
+- Tab labels hidden (`tabBarShowLabel: false`)
+
 ## To-do
 
-- [x] Build native app (`pnpm android`) to link `expo-crypto` + `expo-auth-session` native modules
-- [x] Test Google OAuth login — should go directly to `/(tabs)/home` or `/(setup)/know-you`
-- [x] Test Facebook OAuth login
-- [x] Test email+password login + OTP flow
-- [x] Test app reload (`r` key) — user should stay on correct page
-- [x] Verify onboarding persistence after reload
+- [ ] Build native app (`pnpm android`) to link `expo-location` + maplibre native modules
+- [ ] Verify map renders with OSM tiles on device/emulator
+- [ ] Add real OSRM route visualization on the map
+- [ ] Add challenges overlay layer on the map
+- [ ] Add user run history visualization on the map
+- [ ] Background location tracking for live runs

@@ -5,136 +5,175 @@ Expo SDK 55 + Expo Router v4 app for runners (Luanda, Angola).
 ## Quick start
 
 ```bash
-pnpm install        # pnpm, not npm (hoisted linker, workspace)
+pnpm install        # pnpm, not npm (hoisted linker)
 pnpm start          # expo start
 pnpm android        # expo run:android (native build)
 pnpm ios            # expo run:ios
 pnpm web            # expo start --web
 ```
 
-## Verify commands
+## Verify
 
 ```bash
 pnpm lint           # eslint src
 pnpm format         # prettier --write "src/**/*.{js,jsx,ts,tsx}"
-pnpm test           # jest (jest-expo + RNTL + MSW)
+pnpm test           # jest (jest-expo + RNTL)
 ```
 
-Run in order: `lint -> test` (no typecheck script exists; rely on IDE/tsc).
+Run `lint -> test` in order. No typecheck script — rely on IDE/tsc.
 
 Single test: `pnpm test -- src/features/home/__tests__/HomeScreen.test.tsx`
 
 ## Routing & auth
 
-File-based routing in `src/app/` with route groups:
+File-based routing in `src/app/`:
 
 | Group          | Gating                           | Purpose                                       |
 | -------------- | -------------------------------- | --------------------------------------------- |
-| `(marketing)/` | Public                           | Splash, onboard-1..4, login, signup           |
+| `(marketing)/` | Public                           | Splash, onboard, login, signup                |
 | `(setup)/`     | Signed in, onboarding incomplete | know-you, frequency, schedule, level, welcome |
-| `(app)/`       | Signed in + onboarding complete  | Wraps `(tabs)`                                |
-| `(tabs)/`      | Signed in + onboarding complete  | home, map, challenges, history, profile       |
+| `(tabs)/`      | Signed in, onboarding complete   | home, map, challenges, history, profile       |
 
-Auth guard logic lives in `src/app/_layout.tsx` (ClerkProvider + AuthGuard). Onboarding gating in `(app)/_layout.tsx` and `(setup)/_layout.tsx`. Entry point is `expo-router/entry` (set in `package.json` `"main"`).
+Auth guard: `src/app/_layout.tsx` (ClerkProvider + AuthGuard). Onboarding gating in `(app)/_layout.tsx` and `(setup)/_layout.tsx`. Onboarding flag: Clerk `unsafeMetadata.onboardingComplete`.
+
+Entry point: `expo-router/entry` (set in `package.json` `"main"`).
 
 ## Architecture
 
 - **Feature-sliced**: `src/features/[name]/` with `screens/`, `hooks/`, `store/`, `__tests__/`
-- **MVVM pattern**: screens delegate logic to `use[Feature]ViewModel` hooks
-- **Shared UI**: `src/components/` (Button, Text, Screen, Card, Avatar, Badge, Header, Modal, Spinner, Toast, TextInput, Select, EmptyState)
-- **Widgets**: `src/widgets/` for self-contained feature composites (e.g. WeeklyRunsResume)
-- **Global state**: Zustand in `src/store/`; server state via TanStack React Query
-- **API client**: Axios with interceptor for token injection + refresh (`src/services/api/client.ts`)
-- **Theme**: `src/theme/` — `tokens.ts` (light/dark colors, spacing, radii, typography) + `ThemeProvider.tsx` (React Context, follows system color scheme)
+- **MVVM**: screens delegate logic to `use[Feature]ViewModel` hooks
+- **Shared UI**: `src/components/` (Button, Text, Screen, Card, Avatar, Badge, Header, Modal, Spinner, Toast, TextInput, Select, EmptyState, ChallengeCard, RunHistoryCard)
+- **Widgets**: `src/widgets/` for self-contained feature composites (e.g. WeeklyRunsResume, NearbyChallenges, RecentRuns)
+- **State**: Zustand (`src/store/`), server state via TanStack React Query
+- **API**: Axios (`src/services/api/client.ts`) — baseURL from `EXPO_PUBLIC_API_URL`, dev logging interceptors. Clerk handles auth token injection + refresh automatically.
+- **Theme**: `src/theme/` — `tokens.ts` (light/dark colors, spacing, radii, typography) + `ThemeProvider.tsx` (React Context, follows system scheme)
 
 ## Path aliases
 
-Configured in `tsconfig.json` and wired in `babel.config.js` via `babel-plugin-module-resolver`. TypeScript and Metro both resolve them.
+Configured in `tsconfig.json` + `babel.config.js` via `babel-plugin-module-resolver`:
 
-Alias reference:
-
-- `@components/*` → `src/components/*`
-- `@screens/*` → `src/features/*`
-- `@hooks/*` → `src/hooks/*`
-- `@widgets/*` → `src/widgets/*`
-- `@store/*` → `src/store/*`
-- `@utils/*` → `src/utils/*`
-- `@api/*` → `src/services/api/*`
+`@components` `@screens` (→ `src/features/`) `@hooks` `@widgets` `@store` `@utils` `@api` `@assets` `@illustrations`
 
 ## Styling
 
-Hybrid approach active simultaneously:
-
-- **NativeWind v4** (Tailwind utility classes via `className`)
-- **StyleSheet API** (some components use both for the same element)
-- **ThemeProvider** React Context for dynamic values (colors, spacing)
+- **NativeWind v4** (Tailwind via `className`) + **StyleSheet API** coexist
+- **ThemeProvider** React Context for dynamic values
 - **`cn()`** utility (`clsx` + `tailwind-merge`) in `src/utils/cn.ts`
-- Custom fonts: `DaysOne_400Regular` (`font-title`), InstrumentSans variants (`font-sans`, `font-sans-md`, `font-sans-semi`, `font-sans-bold`)
-- Custom `Text` component with `variant` prop (`title-xl`, `title-lg`, `title-md`, `title-sm`, `body-lg`, `body`, `body-sm`, `label`, `button`)
+- Fonts: `DaysOne_400Regular` (`font-title`), InstrumentSans variants (`font-sans`, `font-sans-md`, `font-sans-semi`, `font-sans-bold`)
+- Custom `Text` component with `variant` prop (`title-xl`…`title-xs`, `body-lg`, `body`, `body-sm`, `label`, `button`)
+
+## Map stack (react-native-maplibre)
+
+Open-source: no Google Maps API required.
+
+| Layer         | Library                            | Purpose                                   |
+| ------------- | ---------------------------------- | ----------------------------------------- |
+| Map renderer  | `react-native-maplibre`            | Renders tiles, markers, overlays          |
+| Routes/search | OSRM (via HTTP or hosted instance) | Route calculation, geocoding              |
+| GPS           | `expo-location`                    | Foreground + background location tracking |
+| Animations    | `react-native-reanimated`          | Smooth UI during tracking, transitions    |
+
+### Map architecture
+
+- **`src/features/map/`** — screens, hooks, store for the map tab
+- **`src/components/map/`** — reusable map elements (MapView wrapper, Markers, AreaOverlay, RouteLine, UserLocationDot, PermissionGate)
+- **`src/services/map/`** — OSRM client, geocoding, route orchestration
+- Every location-aware component wraps itself in a `PermissionGate` that requests `expo-location` foreground permission on first mount. Declined = show explanation + settings button (never silent fail).
+- Map overlays (regions/area ratings, challenges, user records, route history) are separate component layers toggled by the parent screen.
+- Smooth map transitions: animated region changes via Reanimated shared values + `MapView.animateToRegion()`, marker pulses, route draw animations.
+- Defer to `react-native-maplibre` docs for native config (`app.json` plugin, Android/iOS manifest entries). Changes to `app.json` must be committed.
+
+### Permission UX
+
+1. On first map mount → prompt foreground location permission via `expo-location`
+2. If denied → show `PermissionGate` component with explanation + "Open Settings" button (Linking.openSettings)
+3. Only after foreground granted → offer background location opt-in for live tracking
+4. Permission state persisted in Zustand (`useLocationStore`) to avoid re-prompting on tab switches
 
 ## Key dependencies
 
-| Purpose       | Library                                                                                                            |
-| ------------- | ------------------------------------------------------------------------------------------------------------------ |
-| Auth          | `@clerk/expo` + `expo-secure-store` (token cache linked via `"token-cache": "link:@clerk/clerk-expo/token-cache"`) |
-| Navigation    | `expo-router` v4, typed routes enabled                                                                             |
-| Maps          | Not yet integrated (exp-location in deps)                                                                          |
-| State         | `zustand` + `@tanstack/react-query`                                                                                |
-| Charts        | `react-native-gifted-charts`                                                                                       |
-| Local storage | `react-native-mmkv`                                                                                                |
-| Animations    | `react-native-reanimated` + `react-native-gesture-handler`                                                         |
+| Purpose    | Library                                                                                                  |
+| ---------- | -------------------------------------------------------------------------------------------------------- |
+| Auth       | `@clerk/expo` + `expo-secure-store` (token cache: `"token-cache": "link:@clerk/clerk-expo/token-cache"`) |
+| Navigation | `expo-router` v4, typed routes enabled                                                                   |
+| State      | `zustand` + `@tanstack/react-query`                                                                      |
+| Charts     | `react-native-gifted-charts`                                                                             |
+| Animations | `react-native-reanimated` + `react-native-gesture-handler`                                               |
+| Map        | `react-native-maplibre`, `expo-location`, OSRM (HTTP)                                                    |
 
 ## Environment
 
 - Node 22 (`.nvmrc`)
 - pnpm (`.npmrc` with `approve-builds=true` for native deps)
 - EAS project ID: `575739ba-94aa-48e9-bc6a-0251f70cde94`
-- App scheme: `strideapp`, deep link prefix: `strideapp://`, `https://strideapp.com`
-- EAS env vars required: `API_URL`, `GOOGLE_MAPS_API_KEY`, `STORAGE_KEY`
-- Clerk key via `EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY`
-- `.env*` files gitignored
-- `.cursor/` and `.cursorrules` gitignored (this repo uses `.agents/` + `AGENTS.md`)
+- Scheme: `strideapp`, deep link: `strideapp://`, `https://strideapp.com`
+- `.env` required: `EXPO_PUBLIC_API_URL`, `EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY`
+- `.env` for EAS builds: `API_URL`, `GOOGLE_MAPS_API_KEY` (unused with maplibre), `STORAGE_KEY`
+- `.env*` files gitignored. `.cursor/`, `.cursorrules` also gitignored (use `.agents/` + `AGENTS.md`)
 
-## EAS builds
+## EAS
 
 ```bash
 pnpm eas:build:dev    # eas build --profile development --platform android
 pnpm eas:update:dev   # eas update --profile development --environment development --branch development
 ```
 
-Three build profiles: `development` (dev client, internal), `preview` (internal), `production` (auto-increment).
+Profiles: `development` (dev client), `preview` (internal), `production` (auto-increment).
 
 ## Testing quirks
 
-- **Jest config**: no custom `jest.config.js` — uses defaults from `jest-expo` preset
-- **No jest setup file** exists
-- **MSW** is a devDependency but not configured yet
-- **Maestro** E2E test at `.maestro/home.yaml` (basic: clear state + tap "Reload User")
+- **No custom Jest config** — uses `jest-expo` preset defaults
+- **No jest setup file**
+- **MSW** is a devDependency but not configured
+- **Maestro** E2E at `.maestro/home.yaml`
 
-## Empty state & UX guidelines
+## Pre-commit
 
-Every data-driven widget/screen MUST handle the empty state. A new user
-with no data should never see a blank screen or broken layout.
+Husky v9. Running `pnpm lint-staged` on staged `*.{js,jsx,ts,tsx}` (eslint --fix + prettier --write) and `*.{json,css,md}` (prettier --write).
 
-### Rules
+## Auth gotchas
 
-1. **Every list or data view checks `data?.length`** before rendering content.
-   Show a friendly illustration/icon + title + description instead.
+- **CustomEvent polyfill** at top of `src/app/_layout.tsx` (before Clerk imports) — Hermes lacks `window`, Clerk needs it to initialize. Always keep it.
+- **OAuth**: use `useSSO` hook + `WebBrowser.openAuthSessionAsync()`, never `signIn.sso()` (web-only popup API).
+- **Finalize navigation**: `router.replace()` directly — never call `decorateUrl` (injects Safari ITP redirect, web-only).
+- **Onboarding flag**: stored in `unsafeMetadata` (client-writable via `user.update()`). All guards check `unsafeMetadata.onboardingComplete`, NOT `publicMetadata`.
 
-2. **Empty state conventions**:
-   - Illustrative icon (lucide-react-native, `strokeWidth={1.5}`, secondary color)
-   - Title: `variant='title-sm'`, `color={colors.textSecondary}`, centered
-   - Description: `variant='body-sm'`, `text-neutral-400`, centered
-   - CTA button when applicable (e.g. "Create your own" for challenges)
+## Tab bar
 
-3. **Chart widgets** check for `data` being null/undefined and fall back to
-   an empty state with a relevant message (e.g. "No runs this week yet").
+Labels hidden (`tabBarShowLabel: false` in `(tabs)/_layout.tsx`). Icons only.
 
-4. **Loading state**: React Query's `isPending`/`isFetching` should be handled
-   where UX matters. For simplicity, `placeholderData` provides instant mock
-   data while the real query resolves.
+## Empty state UX
 
-5. **Mock data** in dev should produce realistic content. The real API response
-   shape (including empty arrays) informs the empty state logic — mock a
-   non-empty state AND verify the empty state renders correctly by toggling
-   mock data or using the `FORCE_EMPTY` flag pattern.
+Every data-driven widget MUST handle the empty state — never show a blank screen.
+
+- Check `data?.length` before rendering content
+- lucide icon (`strokeWidth={1.5}`, `colors.textSecondary`), `title-sm` title, `body-sm` description (`text-neutral-400`), CTA button when applicable
+- Charts: handle null/undefined data with fallback message
+- Loading: React Query `placeholderData` for instant mock data; `isPending`/`isFetching` handled where UX matters
+
+## Map component organization
+
+```
+src/
+  components/
+    map/
+      MapView.tsx          # Wrapped maplibre MapView with theme-aware style
+      MapMarker.tsx        # Reusable marker with animated pulse
+      AreaOverlay.tsx      # GeoJSON region overlay with color-coded rating
+      RouteLine.tsx        # Animated route line (OSRM response rendered)
+      UserLocationDot.tsx  # Blue dot with accuracy circle, Reanimated pulse
+      PermissionGate.tsx   # Location permission request + fallback UI
+  services/
+    map/
+      osrmClient.ts        # Axios instance for OSRM (route, geocode, search)
+  features/
+    map/
+      screens/
+        MapScreen.tsx      # Main map screen, orchestrates overlays
+      hooks/
+        useUserLocation.ts # expo-location hook with permission flow
+        useMapRegion.ts    # Viewport state + animation
+      store/
+        locationStore.ts   # Zustand: permission state, last known location
+      __tests__/
+```

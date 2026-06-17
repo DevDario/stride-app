@@ -48,7 +48,16 @@
           "imageHeight": 200
         }
       ],
-      "expo-web-browser"
+      "expo-web-browser",
+      [
+        "expo-location",
+        {
+          "locationAlwaysAndWhenInUsePermission": "Stride needs your location to track your runs and show nearby challenges.",
+          "locationAlwaysPermission": "Stride needs background location access to track your runs even when the app is in the background.",
+          "locationWhenInUsePermission": "Stride needs your location to show your position on the map and track runs."
+        }
+      ],
+      "@maplibre/maplibre-react-native"
     ],
     "experiments": {
       "typedRoutes": true
