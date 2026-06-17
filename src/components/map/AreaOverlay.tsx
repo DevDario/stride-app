@@ -6,6 +6,7 @@ interface AreaOverlayProps {
   id: string;
   geoJson: GeoJSON.Feature<GeoJSON.Polygon | GeoJSON.MultiPolygon>;
   rating: RatingLevel;
+  opacity?: number;
 }
 
 const RATING_COLORS: Record<RatingLevel, string> = {
@@ -24,31 +25,38 @@ const RATING_OPACITIES: Record<RatingLevel, number> = {
   5: 0.2,
 };
 
-export function AreaOverlay({ id, geoJson, rating }: AreaOverlayProps) {
+export function AreaOverlay({
+  id,
+  geoJson,
+  rating,
+  opacity = 1,
+}: AreaOverlayProps) {
   return (
     <>
       <GeoJSONSource
         id={`${id}-source`}
-        shape={{
+        data={{
           type: 'FeatureCollection',
           features: [geoJson],
         }}
       />
       <Layer
+        type='fill'
         id={`${id}-fill`}
-        sourceId={`${id}-source`}
+        source={`${id}-source`}
         paint={{
           'fill-color': RATING_COLORS[rating],
-          'fill-opacity': RATING_OPACITIES[rating],
+          'fill-opacity': RATING_OPACITIES[rating] * opacity,
         }}
       />
       <Layer
+        type='line'
         id={`${id}-outline`}
-        sourceId={`${id}-source`}
+        source={`${id}-source`}
         paint={{
           'line-color': RATING_COLORS[rating],
           'line-width': 2,
-          'line-opacity': 0.8,
+          'line-opacity': 0.8 * opacity,
         }}
       />
     </>
