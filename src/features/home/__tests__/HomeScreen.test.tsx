@@ -18,6 +18,18 @@ jest.mock('../../../theme/ThemeProvider', () => ({
   }),
 }));
 
+jest.mock('@widgets/CurrentWeekView', () => ({
+  CurrentWeekView: () => <></>,
+}));
+
+jest.mock('@widgets/NearbyChallenges', () => ({
+  NearbyChallenges: () => <></>,
+}));
+
+jest.mock('@widgets/RecentRuns', () => ({
+  RecentRuns: () => <></>,
+}));
+
 jest.mock('@widgets/WeeklyRunsResume', () => ({
   WeeklyRunsResume: () => <></>,
 }));
