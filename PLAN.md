@@ -126,15 +126,29 @@ Auth gating is in `src/app/_layout.tsx` (AuthGuard), `(setup)/_layout.tsx`, and 
 - After countdown, `runState` transitions to `'running'` — button, countdown, overlays are gone, map stays tilted
 - `StrideMapViewRef` gained `easeTo(center, zoom?, pitch?, duration?)` for smooth camera transitions
 
+#### Map layers bottom sheet with toggle pills
+
+- **`types/map.types.ts`**: `LayerKey` union type (`areaRatings | challenges | routes | records`), `ChallengeMarker`, `RouteRecord`, `RecordEntry` interfaces
+- **`hooks/useMapLayers.ts`**: manages `activeLayers: Set<LayerKey>` state, `toggleLayer(layer)` and `setLayers` callbacks; default: `['areaRatings']`
+- **`hooks/useChallengesData.ts`**: lazy data fetch gated by `enabled` boolean — only fetches mock data (3 Luanda challenges: Marginal Sprint, Ilha Trail, Maianga Loop) on first toggle-on; caches in component state, never re-fetches on subsequent toggles
+- **`hooks/useRoutesData.ts`** / **`hooks/useRecordsData.ts`**: identical lazy pattern, returns empty arrays, marked with `// TODO: replace with real API call`
+- **`components/ChallengesLayer.tsx`**: renders `Marker` for each challenge with `FlagTriangleRight` icon + challenge name label
+- **`components/RoutesLayer.tsx`** / **`components/RecordsLayer.tsx`**: return `null`, wired to toggle state, `// TODO` comments for real data
+- **`components/MapLayersBottomSheet.tsx`**: persistent bottom sheet with Reanimated slide-up + fade-in entrance (translateY + opacity). Contains horizontal `ScrollView` with 4 toggle pills:
+  - _Area Ratings_ (no icon) | _Challenges_ (`FlagTriangleRight`) | _My Routes_ (`Route`) | _Records_ (`Trophy`)
+  - Active: `colors.primary` bg + white text/icon; Inactive: `#F7F7F7` bg + `#AFAFAF` text/icon
+  - Drag handle pill at top center, rounded top corners, shadow
+- **MapScreen integration**: `useMapLayers` + lazy data hooks at top; layers rendered conditionally inside `<StrideMapView>`; bottom sheet rendered as absolute overlay; Start button repositioned at `bottom: 130` to stay above the sheet
+
 ## To-do
 
 - [ ] Test CARTO dark-matter style + user location dot on real device
 - [ ] Add proper AreaOverlay type annotations (labels/legends for district names + ratings)
 - [ ] Add OSRM route visualization on the map
-- [ ] Add challenges overlay layer on the map
-- [ ] Add user run history visualization on the map
+- [x] Add challenges overlay layer on the map (ChallengesLayer + useChallengesData)
+- [x] Add user run history / routes / records layer stubs
+- [x] **Map markers toggle** — bottom sheet with toggle pills for each layer
 - [ ] Background location tracking for live runs
 - [ ] **Race counter overlay** — create a full-screen timer overlay (screenshot → Claude → prompt → implement)
 - [ ] **Run control buttons** — add pause, stop, and lock buttons at the bottom of the map screen with their respective functionality
 - [ ] **Post-run reset** — after finishing a run, map returns to idle state: pitch goes back to 0, area overlays fade back in, run buttons are replaced by Start button
-- [ ] **Map markers toggle** — add toggle options at the bottom to show/hide different overlay types (districts, challenges, user history, etc.)
