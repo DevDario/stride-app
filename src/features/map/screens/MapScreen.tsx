@@ -5,10 +5,20 @@ import { PermissionGate } from '@components/map/PermissionGate';
 import { UserLocationDot } from '@components/map/UserLocationDot';
 import { useRouter } from 'expo-router';
 import { ChevronLeft, Play } from 'lucide-react-native';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useRef, useState } from 'react';
 import { Animated, Pressable, StyleSheet, Text, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useLocationStore } from 'src/features/map/store/locationStore';
 import { useTheme } from 'src/theme/ThemeProvider';
+
+import { ChallengesLayer } from '../components/ChallengesLayer';
+import { MapLayersBottomSheet } from '../components/MapLayersBottomSheet';
+import { RecordsLayer } from '../components/RecordsLayer';
+import { RoutesLayer } from '../components/RoutesLayer';
+import { useChallengesData } from '../hooks/useChallengesData';
+import { useMapLayers } from '../hooks/useMapLayers';
+import { useRecordsData } from '../hooks/useRecordsData';
+import { useRoutesData } from '../hooks/useRoutesData';
 
 type RunState = 'idle' | 'starting' | 'running';
 
@@ -276,7 +286,11 @@ function CountdownNumber({
   const scaleAnim = useRef(new Animated.Value(0)).current;
   const opacityAnim = useRef(new Animated.Value(0)).current;
 
-  useEffect(() => {
+  const animKey = useRef(0);
+  animKey.current += 1;
+
+  const currentKey = animKey.current;
+  const runOnce = useCallback(() => {
     Animated.sequence([
       Animated.parallel([
         Animated.timing(scaleAnim, {
@@ -300,8 +314,16 @@ function CountdownNumber({
         duration: 200,
         useNativeDriver: true,
       }),
-    ]).start(onComplete);
-  }, []);
+    ]).start(() => {
+      if (animKey.current === currentKey) {
+        onComplete();
+      }
+    });
+  }, [scaleAnim, opacityAnim, onComplete, currentKey]);
+
+  useEffect(() => {
+    runOnce();
+  }, [runOnce]);
 
   return (
     <View style={countdownStyles.container}>
@@ -342,10 +364,16 @@ export function MapScreen() {
   const router = useRouter();
   const mapRef = useRef<StrideMapViewRef>(null);
   const { lastKnownLatitude, lastKnownLongitude } = useLocationStore();
+  const insets = useSafeAreaInsets();
   const [runState, setRunState] = useState<RunState>('idle');
   const [countdownKey, setCountdownKey] = useState(0);
   const [overlayOpacity, setOverlayOpacity] = useState(1);
   const animationRef = useRef<number | null>(null);
+
+  const { activeLayers, toggleLayer } = useMapLayers();
+  const { challenges } = useChallengesData(activeLayers.has('challenges'));
+  const { routes } = useRoutesData(activeLayers.has('routes'));
+  const { records } = useRecordsData(activeLayers.has('records'));
 
   const animateOverlayFade = useCallback(() => {
     const startTime = Date.now();
@@ -388,22 +416,31 @@ export function MapScreen() {
         <StrideMapView ref={mapRef} zoomLevel={DEFAULT_ZOOM}>
           <UserLocationDot />
 
-          {LUANDA_DISTRICTS.map((district) => (
-            <AreaOverlay
-              key={district.id}
-              id={district.id}
-              rating={district.rating}
-              opacity={overlayOpacity}
-              geoJson={{
-                type: 'Feature',
-                properties: {},
-                geometry: {
-                  type: 'Polygon',
-                  coordinates: [district.polygon],
-                },
-              }}
-            />
-          ))}
+          {activeLayers.has('areaRatings') &&
+            LUANDA_DISTRICTS.map((district) => (
+              <AreaOverlay
+                key={district.id}
+                id={district.id}
+                rating={district.rating}
+                opacity={overlayOpacity}
+                geoJson={{
+                  type: 'Feature',
+                  properties: {},
+                  geometry: {
+                    type: 'Polygon',
+                    coordinates: [district.polygon],
+                  },
+                }}
+              />
+            ))}
+
+          {activeLayers.has('challenges') && (
+            <ChallengesLayer challenges={challenges} />
+          )}
+
+          {activeLayers.has('routes') && <RoutesLayer routes={routes} />}
+
+          {activeLayers.has('records') && <RecordsLayer records={records} />}
         </StrideMapView>
       </PermissionGate>
 
@@ -419,7 +456,7 @@ export function MapScreen() {
         onPress={() => router.back()}
         style={{
           position: 'absolute',
-          top: 54,
+          top: insets.top + 8,
           left: 16,
           width: 40,
           height: 40,
@@ -449,6 +486,11 @@ export function MapScreen() {
           <Text style={startButtonStyles.label}>Start Run</Text>
         </Pressable>
       )}
+
+      <MapLayersBottomSheet
+        activeLayers={activeLayers}
+        onToggle={toggleLayer}
+      />
     </View>
   );
 }
@@ -456,7 +498,7 @@ export function MapScreen() {
 const startButtonStyles = StyleSheet.create({
   button: {
     position: 'absolute',
-    bottom: 40,
+    bottom: 130,
     alignSelf: 'center',
     flexDirection: 'row',
     alignItems: 'center',
