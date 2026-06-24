@@ -35,7 +35,6 @@ import { useMapLayers } from '../hooks/useMapLayers';
 import { useRecordsData } from '../hooks/useRecordsData';
 import { useRoutesData } from '../hooks/useRoutesData';
 import { useRunTracking } from '../hooks/useRunTracking';
-import type { AreaOverlayLabel as AreaOverlayLabelType } from '../types/map.types';
 
 const LUANDA_CENTER: [number, number] = [13.234444, -8.838333];
 const DEFAULT_ZOOM = 13;
@@ -311,22 +310,6 @@ function polygonCentroid(polygon: [number, number][]): [number, number] {
   return [sum[0] / n, sum[1] / n];
 }
 
-const DISTRICT_BREAKDOWNS: Record<
-  string,
-  { safety: number; vibe: number; crowd: number }
-> = {
-  ingombota: { safety: 3.8, vibe: 4.2, crowd: 3.5 },
-  samba: { safety: 3.5, vibe: 3.8, crowd: 3.2 },
-  maianga: { safety: 3.2, vibe: 3.5, crowd: 3.0 },
-  kilamba_kiaxi: { safety: 3.0, vibe: 3.2, crowd: 2.8 },
-  rangel: { safety: 2.8, vibe: 3.0, crowd: 2.5 },
-  sambizanga: { safety: 2.5, vibe: 2.8, crowd: 2.2 },
-  cazenga: { safety: 2.8, vibe: 3.0, crowd: 2.5 },
-  viana: { safety: 2.0, vibe: 2.5, crowd: 2.0 },
-  futungo_de_belas: { safety: 4.0, vibe: 4.5, crowd: 3.8 },
-  kilamba: { safety: 4.5, vibe: 4.8, crowd: 4.2 },
-};
-
 function CountdownNumber({
   value,
   onComplete,
@@ -410,9 +393,11 @@ export function MapScreen() {
   const [countdownKey, setCountdownKey] = useState(-1);
   const [overlayOpacity, setOverlayOpacity] = useState(1);
   const animationRef = useRef<number | null>(null);
-  const [selectedArea, setSelectedArea] = useState<AreaOverlayLabelType | null>(
-    null
-  );
+  const [selectedArea, setSelectedArea] = useState<{
+    areaId: string;
+    rating: number;
+    centroid: [number, number];
+  } | null>(null);
 
   const tracking = useRunTracking();
   const { activeLayers, toggleLayer } = useMapLayers();
@@ -447,7 +432,9 @@ export function MapScreen() {
   const handleMapPress = useCallback(
     (e: any) => {
       if (!isIdle || !activeLayers.has('areaRatings')) return;
-      const { lng, lat } = e.nativeEvent.lngLat;
+      const ll = e.nativeEvent.lngLat;
+      const lng = Array.isArray(ll) ? ll[0] : ll.lng;
+      const lat = Array.isArray(ll) ? ll[1] : ll.lat;
 
       const district = LUANDA_DISTRICTS.find((d) =>
         pointInPolygon([lng, lat], d.polygon)
@@ -456,15 +443,8 @@ export function MapScreen() {
       if (district) {
         setSelectedArea({
           areaId: district.id,
-          name: district.name,
           rating: district.rating,
-          breakdown: DISTRICT_BREAKDOWNS[district.id] ?? {
-            safety: 3,
-            vibe: 3,
-            crowd: 3,
-          },
           centroid: polygonCentroid(district.polygon),
-          visible: true,
         });
       } else {
         setSelectedArea(null);
@@ -612,17 +592,17 @@ export function MapScreen() {
           {isIdle && activeLayers.has('records') && (
             <RecordsLayer records={records} />
           )}
+
+          {selectedArea && (
+            <AreaOverlayLabel
+              key={selectedArea.areaId}
+              areaId={selectedArea.areaId}
+              rating={selectedArea.rating}
+              centroid={selectedArea.centroid}
+            />
+          )}
         </StrideMapView>
       </PermissionGate>
-
-      {selectedArea && (
-        <AreaOverlayLabel
-          name={selectedArea.name}
-          rating={selectedArea.rating}
-          breakdown={selectedArea.breakdown}
-          onDismiss={() => setSelectedArea(null)}
-        />
-      )}
 
       {countdownKey >= 0 && (
         <CountdownNumber
