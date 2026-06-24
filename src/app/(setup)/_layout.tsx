@@ -24,6 +24,7 @@ export default function SetupLayout() {
         <Stack.Screen name='frequency' />
         <Stack.Screen name='schedule' />
         <Stack.Screen name='level' />
+        <Stack.Screen name='permissions' />
         <Stack.Screen name='welcome' />
       </Stack>
     </View>

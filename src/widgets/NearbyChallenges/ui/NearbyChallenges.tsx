@@ -38,7 +38,7 @@ function ChallengesEmptyState() {
         variant='primary'
         className='mt-3'
         title='See in other areas'
-        onPress={() => router.push('/(tabs)/challenges')}
+        onPress={() => router.push('/(tabs)/map')}
       />
     </View>
   );

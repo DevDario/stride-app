@@ -17,7 +17,7 @@ export function ChallengesLayer({ challenges }: ChallengesLayerProps) {
       {challenges.map((ch) => (
         <Marker key={ch.id} id={ch.id} lngLat={ch.coordinate}>
           <View style={{ alignItems: 'center' }}>
-            <FlagTriangleRight size={20} color={colors.danger} />
+            <FlagTriangleRight size={20} color={colors.primary} />
             <Text
               style={{
                 fontSize: 10,

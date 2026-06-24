@@ -1,5 +1,10 @@
 import type { LucideIcon } from 'lucide-react-native';
-import { FlagTriangleRight, Route, Trophy } from 'lucide-react-native';
+import {
+  FlagTriangleRight,
+  MapPinned,
+  Route,
+  Trophy,
+} from 'lucide-react-native';
 import { useEffect, useMemo } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import Animated, {
@@ -7,7 +12,6 @@ import Animated, {
   useSharedValue,
   withTiming,
 } from 'react-native-reanimated';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from 'src/theme/ThemeProvider';
 
 import type { LayerKey } from '../types/map.types';
@@ -19,7 +23,7 @@ interface PillDefinition {
 }
 
 const PILLS: PillDefinition[] = [
-  { key: 'areaRatings', label: 'Area Ratings' },
+  { key: 'areaRatings', label: 'Area Ratings', Icon: MapPinned },
   { key: 'challenges', label: 'Challenges', Icon: FlagTriangleRight },
   { key: 'routes', label: 'My Routes', Icon: Route },
   { key: 'records', label: 'Records', Icon: Trophy },
@@ -28,22 +32,28 @@ const PILLS: PillDefinition[] = [
 interface MapLayersBottomSheetProps {
   activeLayers: Set<LayerKey>;
   onToggle: (layer: LayerKey) => void;
+  visible: boolean;
 }
 
 export function MapLayersBottomSheet({
   activeLayers,
   onToggle,
+  visible,
 }: MapLayersBottomSheetProps) {
   const { colors, radii } = useTheme();
-  const insets = useSafeAreaInsets();
 
-  const translateY = useSharedValue(80);
+  const translateY = useSharedValue(300);
   const opacity = useSharedValue(0);
 
   useEffect(() => {
-    translateY.value = withTiming(0, { duration: 400 });
-    opacity.value = withTiming(1, { duration: 400 });
-  }, [opacity, translateY]);
+    if (visible) {
+      translateY.value = withTiming(0, { duration: 400 });
+      opacity.value = withTiming(1, { duration: 400 });
+    } else {
+      translateY.value = withTiming(300, { duration: 300 });
+      opacity.value = withTiming(0, { duration: 300 });
+    }
+  }, [opacity, translateY, visible]);
 
   const animatedStyle = useAnimatedStyle(() => ({
     transform: [{ translateY: translateY.value }],
@@ -56,7 +66,7 @@ export function MapLayersBottomSheet({
         styles.container,
         animatedStyle,
         {
-          paddingBottom: insets.bottom + 8,
+          paddingBottom: 12,
           backgroundColor: '#FFFFFF',
           borderTopLeftRadius: radii.lg,
           borderTopRightRadius: radii.lg,

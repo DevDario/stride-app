@@ -31,34 +31,30 @@ export function AreaOverlay({
   rating,
   opacity = 1,
 }: AreaOverlayProps) {
+  const fillOpacity = RATING_OPACITIES[rating] * opacity;
   return (
-    <>
-      <GeoJSONSource
-        id={`${id}-source`}
-        data={{
-          type: 'FeatureCollection',
-          features: [geoJson],
-        }}
-      />
+    <GeoJSONSource
+      id={`${id}-source`}
+      data={{
+        type: 'FeatureCollection',
+        features: [
+          {
+            ...geoJson,
+            properties: { rating },
+          },
+        ],
+      }}
+    >
       <Layer
         type='fill'
         id={`${id}-fill`}
         source={`${id}-source`}
         paint={{
           'fill-color': RATING_COLORS[rating],
-          'fill-opacity': RATING_OPACITIES[rating] * opacity,
+          'fill-opacity': fillOpacity,
+          'fill-outline-color': RATING_COLORS[rating],
         }}
       />
-      <Layer
-        type='line'
-        id={`${id}-outline`}
-        source={`${id}-source`}
-        paint={{
-          'line-color': RATING_COLORS[rating],
-          'line-width': 2,
-          'line-opacity': 0.8 * opacity,
-        }}
-      />
-    </>
+    </GeoJSONSource>
   );
 }

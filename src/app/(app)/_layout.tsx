@@ -15,10 +15,15 @@ export default function AppLayout() {
     return <Redirect href='/(setup)/know-you' />;
   }
 
+  if (!user?.unsafeMetadata?.permissionsHandled) {
+    return <Redirect href='/(app)/permissions' />;
+  }
+
   return (
     <View style={{ flex: 1, backgroundColor: colors.background }}>
       <Stack screenOptions={{ headerShown: false }}>
         <Stack.Screen name='(tabs)' />
+        <Stack.Screen name='permissions' />
       </Stack>
     </View>
   );

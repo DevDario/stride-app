@@ -26,13 +26,13 @@ export default function SignupScreen() {
   async function handleSignup() {
     setError(null);
 
-    const { error: passwordError } = await signUp.password({
+    const { error: createError } = await signUp.create({
       emailAddress: email,
       password,
     });
 
-    if (passwordError) {
-      setError(passwordError.message);
+    if (createError) {
+      setError(createError.message);
       return;
     }
 

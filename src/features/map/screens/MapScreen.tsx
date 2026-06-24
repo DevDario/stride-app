@@ -3,35 +3,52 @@ import { StrideMapView } from '@components/map/MapView';
 import type { StrideMapViewRef } from '@components/map/MapView';
 import { PermissionGate } from '@components/map/PermissionGate';
 import { UserLocationDot } from '@components/map/UserLocationDot';
+import * as Location from 'expo-location';
 import { useRouter } from 'expo-router';
 import { ChevronLeft, Play } from 'lucide-react-native';
-import { useCallback, useRef, useState } from 'react';
-import { Animated, Pressable, StyleSheet, Text, View } from 'react-native';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import {
+  Alert as RNAlert,
+  Animated,
+  Linking,
+  Pressable,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useLocationStore } from 'src/features/map/store/locationStore';
 import { useTheme } from 'src/theme/ThemeProvider';
+import { chaikinSmooth } from 'src/utils/geo';
 
+import { AreaOverlayLabel } from '../components/AreaOverlayLabel';
 import { ChallengesLayer } from '../components/ChallengesLayer';
 import { MapLayersBottomSheet } from '../components/MapLayersBottomSheet';
+import { PostRunBottomSheet } from '../components/PostRunBottomSheet';
+import type { PostRunBottomSheetRef } from '../components/PostRunBottomSheet';
 import { RecordsLayer } from '../components/RecordsLayer';
 import { RoutesLayer } from '../components/RoutesLayer';
+import { RunControlButtons } from '../components/RunControlButtons';
+import { RunStatsOverlay } from '../components/RunStatsOverlay';
 import { useChallengesData } from '../hooks/useChallengesData';
 import { useMapLayers } from '../hooks/useMapLayers';
 import { useRecordsData } from '../hooks/useRecordsData';
 import { useRoutesData } from '../hooks/useRoutesData';
-
-type RunState = 'idle' | 'starting' | 'running';
+import { useRunTracking } from '../hooks/useRunTracking';
+import type { AreaOverlayLabel as AreaOverlayLabelType } from '../types/map.types';
 
 const LUANDA_CENTER: [number, number] = [13.234444, -8.838333];
 const DEFAULT_ZOOM = 13;
 
 const LUANDA_DISTRICTS: {
   id: string;
+  name: string;
   rating: 1 | 2 | 3 | 4 | 5;
   polygon: [number, number][];
 }[] = [
   {
     id: 'ingombota',
+    name: 'Ingombota',
     rating: 4,
     polygon: [
       [13.213196, -8.81764],
@@ -43,6 +60,7 @@ const LUANDA_DISTRICTS: {
   },
   {
     id: 'samba',
+    name: 'Samba',
     rating: 4,
     polygon: [
       [13.215542, -8.897736],
@@ -71,6 +89,7 @@ const LUANDA_DISTRICTS: {
   },
   {
     id: 'maianga',
+    name: 'Maianga',
     rating: 3,
     polygon: [
       [13.220179, -8.897079],
@@ -98,6 +117,7 @@ const LUANDA_DISTRICTS: {
   },
   {
     id: 'kilamba_kiaxi',
+    name: 'Kilamba Kiaxi',
     rating: 3,
     polygon: [
       [13.319212, -8.906159],
@@ -128,6 +148,7 @@ const LUANDA_DISTRICTS: {
   },
   {
     id: 'rangel',
+    name: 'Rangel',
     rating: 3,
     polygon: [
       [13.275032, -8.843163],
@@ -144,6 +165,7 @@ const LUANDA_DISTRICTS: {
   },
   {
     id: 'sambizanga',
+    name: 'Sambizanga',
     rating: 2,
     polygon: [
       [13.272506, -8.815201],
@@ -187,6 +209,7 @@ const LUANDA_DISTRICTS: {
   },
   {
     id: 'cazenga',
+    name: 'Cazenga',
     rating: 3,
     polygon: [
       [13.311676, -8.864766],
@@ -208,6 +231,7 @@ const LUANDA_DISTRICTS: {
   },
   {
     id: 'viana',
+    name: 'Viana',
     rating: 1,
     polygon: [
       [13.323497, -9.131643],
@@ -236,6 +260,7 @@ const LUANDA_DISTRICTS: {
   },
   {
     id: 'futungo_de_belas',
+    name: 'Futungo de Belas',
     rating: 4,
     polygon: [
       [13.19298, -8.934549],
@@ -263,6 +288,7 @@ const LUANDA_DISTRICTS: {
   },
   {
     id: 'kilamba',
+    name: 'Kilamba',
     rating: 5,
     polygon: [
       [13.285564, -9.023798],
@@ -286,11 +312,7 @@ function CountdownNumber({
   const scaleAnim = useRef(new Animated.Value(0)).current;
   const opacityAnim = useRef(new Animated.Value(0)).current;
 
-  const animKey = useRef(0);
-  animKey.current += 1;
-
-  const currentKey = animKey.current;
-  const runOnce = useCallback(() => {
+  useEffect(() => {
     Animated.sequence([
       Animated.parallel([
         Animated.timing(scaleAnim, {
@@ -314,16 +336,9 @@ function CountdownNumber({
         duration: 200,
         useNativeDriver: true,
       }),
-    ]).start(() => {
-      if (animKey.current === currentKey) {
-        onComplete();
-      }
-    });
-  }, [scaleAnim, opacityAnim, onComplete, currentKey]);
-
-  useEffect(() => {
-    runOnce();
-  }, [runOnce]);
+    ]).start(onComplete);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <View style={countdownStyles.container}>
@@ -363,41 +378,89 @@ export function MapScreen() {
   const { colors } = useTheme();
   const router = useRouter();
   const mapRef = useRef<StrideMapViewRef>(null);
+  const postRunSheetRef = useRef<PostRunBottomSheetRef>(null);
   const { lastKnownLatitude, lastKnownLongitude } = useLocationStore();
   const insets = useSafeAreaInsets();
-  const [runState, setRunState] = useState<RunState>('idle');
-  const [countdownKey, setCountdownKey] = useState(0);
+
+  const [countdownKey, setCountdownKey] = useState(-1);
   const [overlayOpacity, setOverlayOpacity] = useState(1);
   const animationRef = useRef<number | null>(null);
+  const [selectedArea, setSelectedArea] = useState<AreaOverlayLabelType | null>(
+    null
+  );
 
+  const tracking = useRunTracking();
   const { activeLayers, toggleLayer } = useMapLayers();
   const { challenges } = useChallengesData(activeLayers.has('challenges'));
   const { routes } = useRoutesData(activeLayers.has('routes'));
   const { records } = useRecordsData(activeLayers.has('records'));
 
-  const animateOverlayFade = useCallback(() => {
-    const startTime = Date.now();
-    const duration = 1500;
+  const isActive = tracking.state === 'running' || tracking.state === 'paused';
+  const isIdle = tracking.state === 'idle';
 
-    function frame() {
-      const elapsed = Date.now() - startTime;
-      const progress = Math.min(elapsed / duration, 1);
-      setOverlayOpacity(1 - progress);
-      if (progress < 1) {
-        animationRef.current = requestAnimationFrame(frame);
+  const animateOverlayTo = useCallback(
+    (targetOpacity: number, duration: number) => {
+      const startTime = Date.now();
+      const startOpacity = overlayOpacity;
+
+      function frame() {
+        const elapsed = Date.now() - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+        setOverlayOpacity(
+          startOpacity + (targetOpacity - startOpacity) * progress
+        );
+        if (progress < 1) {
+          animationRef.current = requestAnimationFrame(frame);
+        }
       }
-    }
-    animationRef.current = requestAnimationFrame(frame);
-  }, []);
+      if (animationRef.current) cancelAnimationFrame(animationRef.current);
+      animationRef.current = requestAnimationFrame(frame);
+    },
+    [overlayOpacity]
+  );
 
-  function handleStart() {
-    setRunState('starting');
+  async function handleStart() {
+    const bg = await Location.getBackgroundPermissionsAsync();
+    if (!bg.granted) {
+      if (!bg.canAskAgain) {
+        await new Promise<void>((resolve) => {
+          RNAlert.alert(
+            'Background location needed',
+            'Enable "Allow all the time" location in Settings to track runs in the background.',
+            [
+              { text: 'Cancel', style: 'cancel', onPress: () => resolve() },
+              {
+                text: 'Open Settings',
+                onPress: () => {
+                  Linking.openSettings();
+                  resolve();
+                },
+              },
+            ]
+          );
+        });
+        return;
+      }
+      const result = await Location.requestBackgroundPermissionsAsync();
+      if (!result.granted) return;
+    }
+
+    const started = await tracking.startLocationUpdates();
+    if (!started) {
+      RNAlert.alert(
+        'Could not start run',
+        'Make sure location is enabled and try again.'
+      );
+      return;
+    }
+
+    setCountdownKey(0);
 
     const lng = lastKnownLongitude ?? LUANDA_CENTER[0];
     const lat = lastKnownLatitude ?? LUANDA_CENTER[1];
-    mapRef.current?.easeTo([lng, lat], DEFAULT_ZOOM, 60, 2000);
+    mapRef.current?.easeTo([lng, lat], DEFAULT_ZOOM, 45, 2000);
 
-    animateOverlayFade();
+    animateOverlayTo(0.2, 1500);
   }
 
   function handleCountdownComplete() {
@@ -406,8 +469,54 @@ export function MapScreen() {
       setCountdownKey(next);
     } else {
       setCountdownKey(-1);
-      setRunState('running');
+      tracking.beginRun();
     }
+  }
+
+  function handlePauseResume() {
+    if (tracking.isPaused) {
+      tracking.resumeRun();
+    } else {
+      tracking.pauseRun();
+    }
+  }
+
+  async function handleStop() {
+    await tracking.stopRun();
+    animateOverlayTo(1, 800);
+    mapRef.current?.easeTo(
+      [
+        lastKnownLongitude ?? LUANDA_CENTER[0],
+        lastKnownLatitude ?? LUANDA_CENTER[1],
+      ],
+      DEFAULT_ZOOM,
+      0,
+      1000
+    );
+
+    if (postRunSheetRef.current) {
+      setTimeout(() => postRunSheetRef.current!.open(), 500);
+    }
+  }
+
+  function handlePostRunClose() {
+    tracking.resetRun();
+    setSelectedArea(null);
+  }
+
+  useEffect(() => {
+    if (tracking.isRunning && tracking.lastCoordinate) {
+      mapRef.current?.easeTo(
+        [tracking.lastCoordinate.longitude, tracking.lastCoordinate.latitude],
+        undefined,
+        45,
+        1500
+      );
+    }
+  }, [tracking.lastCoordinate, tracking.isRunning]);
+
+  function handleToggleLock() {
+    tracking.setIsLocked(!tracking.isLocked);
   }
 
   return (
@@ -428,23 +537,36 @@ export function MapScreen() {
                   properties: {},
                   geometry: {
                     type: 'Polygon',
-                    coordinates: [district.polygon],
+                    coordinates: [chaikinSmooth(district.polygon, 3)],
                   },
                 }}
               />
             ))}
 
-          {activeLayers.has('challenges') && (
+          {isIdle && activeLayers.has('challenges') && (
             <ChallengesLayer challenges={challenges} />
           )}
 
-          {activeLayers.has('routes') && <RoutesLayer routes={routes} />}
+          {isIdle && activeLayers.has('routes') && (
+            <RoutesLayer routes={routes} />
+          )}
 
-          {activeLayers.has('records') && <RecordsLayer records={records} />}
+          {isIdle && activeLayers.has('records') && (
+            <RecordsLayer records={records} />
+          )}
         </StrideMapView>
       </PermissionGate>
 
-      {runState === 'starting' && countdownKey >= 0 && (
+      {selectedArea && (
+        <AreaOverlayLabel
+          name={selectedArea.name}
+          rating={selectedArea.rating}
+          breakdown={selectedArea.breakdown}
+          onDismiss={() => setSelectedArea(null)}
+        />
+      )}
+
+      {countdownKey >= 0 && (
         <CountdownNumber
           key={countdownKey}
           value={3 - countdownKey}
@@ -452,29 +574,40 @@ export function MapScreen() {
         />
       )}
 
-      <Pressable
-        onPress={() => router.back()}
-        style={{
-          position: 'absolute',
-          top: insets.top + 8,
-          left: 16,
-          width: 40,
-          height: 40,
-          borderRadius: 20,
-          backgroundColor: colors.background,
-          alignItems: 'center',
-          justifyContent: 'center',
-          shadowColor: '#000',
-          shadowOffset: { width: 0, height: 2 },
-          shadowOpacity: 0.15,
-          shadowRadius: 4,
-          elevation: 4,
-        }}
-      >
-        <ChevronLeft size={24} color={colors.text} />
-      </Pressable>
+      {isActive && (
+        <RunStatsOverlay
+          elapsedTime={tracking.elapsedTime}
+          distance={tracking.distance}
+          pace={tracking.pace}
+          isPaused={tracking.isPaused}
+        />
+      )}
 
-      {runState === 'idle' && (
+      {isIdle && (
+        <Pressable
+          onPress={() => router.back()}
+          style={{
+            position: 'absolute',
+            top: insets.top + 8,
+            left: 16,
+            width: 40,
+            height: 40,
+            borderRadius: 20,
+            backgroundColor: colors.background,
+            alignItems: 'center',
+            justifyContent: 'center',
+            shadowColor: '#000',
+            shadowOffset: { width: 0, height: 2 },
+            shadowOpacity: 0.15,
+            shadowRadius: 4,
+            elevation: 4,
+          }}
+        >
+          <ChevronLeft size={24} color={colors.text} />
+        </Pressable>
+      )}
+
+      {isIdle && (
         <Pressable
           onPress={handleStart}
           style={[
@@ -487,9 +620,32 @@ export function MapScreen() {
         </Pressable>
       )}
 
+      {isActive && (
+        <RunControlButtons
+          isPaused={tracking.isPaused}
+          isLocked={tracking.isLocked}
+          onPauseResume={handlePauseResume}
+          onStop={handleStop}
+          onToggleLock={handleToggleLock}
+        />
+      )}
+
+      {tracking.isFinished && (
+        <PostRunBottomSheet
+          ref={postRunSheetRef}
+          elapsedTime={tracking.elapsedTime}
+          distance={tracking.distance}
+          pace={tracking.pace}
+          coordinates={tracking.coordinates}
+          challengeId={tracking.challengeId}
+          onClose={handlePostRunClose}
+        />
+      )}
+
       <MapLayersBottomSheet
         activeLayers={activeLayers}
         onToggle={toggleLayer}
+        visible={isIdle}
       />
     </View>
   );

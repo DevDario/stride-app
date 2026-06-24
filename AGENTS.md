@@ -10,6 +10,9 @@ pnpm start          # expo start
 pnpm android        # expo run:android (native build)
 pnpm ios            # expo run:ios
 pnpm web            # expo start --web
+
+# ALWAYS install deps with `pnpm expo install` (NOT `pnpm add`) to get the
+# version compatible with our Expo SDK 55 — pnpm add can pull the wrong SDK.
 ```
 
 ## Verify

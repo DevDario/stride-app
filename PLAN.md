@@ -125,6 +125,31 @@ Auth gating is in `src/app/_layout.tsx` (AuthGuard), `(setup)/_layout.tsx`, and 
 - On press: map tilts to 60° pitch over 2s via `StrideMapViewRef.easeTo()`, district overlays smoothly fade out over 1.5s via `requestAnimationFrame`, countdown (3→2→1) plays with animated scale + opacity per number
 - After countdown, `runState` transitions to `'running'` — button, countdown, overlays are gone, map stays tilted
 - `StrideMapViewRef` gained `easeTo(center, zoom?, pitch?, duration?)` for smooth camera transitions
+- **Error fix**: `startRun()` was not awaited in `handleStart()` → uncaught promise rejection crashed the run flow. Now awaited with try-catch; returns `boolean` — failure prevents countdown from starting.
+
+#### Foreground service & permissions (DONE)
+
+- Added `FOREGROUND_SERVICE` and `POST_NOTIFICATIONS` to `app.json` Android permissions to allow foreground service notification for run tracking
+- Added `ACCESS_BACKGROUND_LOCATION` + `ACCESS_FINE_LOCATION` + `ACCESS_COARSE_LOCATION` alongside
+- `startLocationUpdatesAsync` now works without crash
+- `startRun()`, `pauseRun()`, `resumeRun()` all wrapped in try-catch returning `Promise<boolean>` — callers (MapScreen) check the return before proceeding
+
+#### Chaikin smoothing for area overlays (DONE)
+
+- Created `src/utils/geo.ts` with `chaikinSmooth(polygon, iterations)` implementing Chaikin's corner-cutting algorithm (25/75 subdivision, 3 iterations)
+- Applied to all Luanda district polygons in MapScreen before passing to AreaOverlay — eliminates jagged GeoJSON edges without external dependencies
+
+#### Onboarding permission UX (DONE)
+
+- All device permissions (location foreground, notifications) are now requested during the onboarding flow — before the user ever reaches the map
+- Created `src/app/(setup)/permissions.tsx` — a two-phase screen inserted between `level` and `welcome`:
+  1. **Location permission**: Uses `expo-location` (`requestForegroundPermissionsAsync`) with explanation about map tracking
+  2. **Notification permission**: Uses `expo-notifications` (`requestPermissionsAsync`) — only shown on Android 13+ (API 33), auto-skipped on older Android + all iOS (iOS permissions are requested on first use via `expo-location` plugin)
+  - Each phase shows a "Skip" button so users aren't forced
+  - If declined, shows amber banner + "Open Settings" fallback on the done screen
+  - On mount, checks if permissions are already granted and auto-advances through the flow
+- Previously permissions were requested lazily on first map mount (`PermissionGate` component), causing re-prompt confusion and broken foreground service states
+- `expo-notifications` added to `app.json` plugins for proper Android notification channel setup
 
 #### Map layers bottom sheet with toggle pills
 
@@ -140,6 +165,26 @@ Auth gating is in `src/app/_layout.tsx` (AuthGuard), `(setup)/_layout.tsx`, and 
   - Drag handle pill at top center, rounded top corners, shadow
 - **MapScreen integration**: `useMapLayers` + lazy data hooks at top; layers rendered conditionally inside `<StrideMapView>`; bottom sheet rendered as absolute overlay; Start button repositioned at `bottom: 130` to stay above the sheet
 
+### 10. Blank screen after deleting index.tsx (FIXED)
+
+**Root cause**: Commit `1f5b4eb` deleted `src/app/index.tsx`. Expo Router requires a root index route — without it, no route matches and a blank screen is shown.
+
+**Fix**: Recreated `src/app/index.tsx` with `<Redirect href='/(marketing)/splash' />`.
+
+### 11. Email/password signup — "No sign up attempt was found" (FIXED)
+
+**Root cause**: The `handleSignup` function in `signup.tsx` called `signUp.password()` (the new Core 3 API method), which sends `{ strategy: "password", emailAddress, password }` to the Clerk `/sign-ups` endpoint. This didn't properly create the sign-up attempt, so the subsequent `sendEmailCode()` call found no sign-up to verify.
+
+**Fix**: Replaced `signUp.password()` with `signUp.create({ emailAddress, password })` — the standard approach used in Clerk docs, which properly creates the sign-up with email identifier + password before sending the verification email code.
+
+**Note**: This email/password flow was never tested before (user always used OAuth). The `login.tsx` sign-in flow remains unchanged (it already works with `signIn.password()`).
+
+### 12. MMKV error after clean build (STALE BUILD)
+
+**Root cause**: `react-native-mmkv` was removed from the project (commit `dff9db7`) but the Android native build cache still links the old native module. The error "Failed to create a new MMKV instance: React Native is not running on-device." only appears in dev builds, not in production.
+
+**Fix needed**: Clean rebuild (`cd android && ./gradlew clean && cd .. && pnpm android`) or `expo prebuild --clean && pnpm android`.
+
 ## To-do
 
 - [ ] Test CARTO dark-matter style + user location dot on real device
@@ -148,7 +193,27 @@ Auth gating is in `src/app/_layout.tsx` (AuthGuard), `(setup)/_layout.tsx`, and 
 - [x] Add challenges overlay layer on the map (ChallengesLayer + useChallengesData)
 - [x] Add user run history / routes / records layer stubs
 - [x] **Map markers toggle** — bottom sheet with toggle pills for each layer
-- [ ] Background location tracking for live runs
+- [x] Background location tracking for live runs
+- [x] **Run control buttons** — add pause, stop, and lock buttons at the bottom of the map screen with their respective functionality
+- [x] **Post-run reset** — after finishing a run, map returns to idle state: pitch goes back to 0, area overlays fade back in, run buttons are replaced by Start button
+- [x] **Timer real-time fix** — `useRunTracking.ts` used `useMemo` with `Date.now()` but `Date.now()` is not reactive, so `elapsedTime` never recomputed between renders. Added `tick` state with `setInterval(1000)` during `running` state, added as dependency to trigger re-computation every second.
+- [x] **PostRunBottomSheet StatCard styling** — removed dark `#1C1C1C` background, switched to border-only style (`borderWidth: 1.5, borderColor: '#E5E7EB'`) matching the ActionButton pattern. Text colors adjusted accordingly.
+- [x] **Timer starts after countdown** — `handleStart()` now calls `startLocationUpdates()` (GPS only) BEFORE countdown; after countdown ends, `beginRun()` sets `store.state = 'running'` with `startedAt = Date.now()`. Split `startRun()` into `startLocationUpdates()` + `beginRun()` in `useRunTracking.ts`.
+- [x] **Bottom sheet shows correct elapsed time** — added `finalElapsedTime` to `RunSession` store, computed in `stopRun()` when state transitions to `'finished'`. Hook now returns `store.finalElapsedTime` for finished state instead of `0`.
+- [x] **Bottom sheet map zoom + pitch** — added `Camera` inside the mini-map with `bounds` computed from route coordinates, `pitch={60}`, and padding to zoom in tightly on the route instead of showing the whole world.
+- [x] **TS error cleanup** — Fixed 10 TypeScript errors across 8 files:
+  - Removed `Platform.Version >= 33` check in both `permissions.tsx` files (unnecessary API level guard)
+  - Added `challengeId` to `useRunTracking` return type
+  - Made location task callback `async` to match `Promise<any>` return type
+  - Removed gesture props (`scrollEnabled`, `zoomEnabled`, etc.) from MapView (not in maplibre v11 MapProps)
+  - Changed `Badge` variant from `'caption'` to `'body-sm'` (not in Variant type)
+  - Removed `color` prop from `Toast` Text component and used `className` instead
+  - Fixed `BottomSheetMethods` import (not exported from `@gorhom/bottom-sheet` v5)
+  - Changed `logoEnabled`/`attributionEnabled` to `logo`/`attribution` on Map
+  - Changed NearbyChallenges route from `'/(tabs)/challenges'` to `'/(tabs)/map'`
+- [x] **Lock button worklet fix** — `RunControlButtons.tsx` used gesture callbacks (`onEnd`) that called `onToggleLock` directly on the UI thread. Reanimated worklets can't call JS functions without `runOnJS`. Wrapped both the LongPress and Tap handlers with `runOnJS(onToggleLock)()`.
+- [x] **Back button hidden during run** — wrapped the back button (`ChevronLeft`) in `{isIdle && ...}` so it only shows when run state is `'idle'` (hidden during running, paused, and finished states).
+- [x] **Button dock redesign** — grouped pause/resume, stop, and lock buttons into a single rounded pill-shaped `dock` container with semi-transparent dark background (`rgba(0,0,0,0.7)`). All buttons share consistent sizing (56x56, 28px radius). Thin dividers between them. Removed per-button background/border styling. Stop icon colored red (`#EF4444`).
 - [ ] **Race counter overlay** — create a full-screen timer overlay (screenshot → Claude → prompt → implement)
-- [ ] **Run control buttons** — add pause, stop, and lock buttons at the bottom of the map screen with their respective functionality
-- [ ] **Post-run reset** — after finishing a run, map returns to idle state: pitch goes back to 0, area overlays fade back in, run buttons are replaced by Start button
+- [x] **Migrate permissions to onboarding** — request location + notification permissions during `(setup)/` flow to match Duolingo-style UX (all permissions upfront)
+- [ ] **Test foreground service on real Android device** — emulator may skip some notification behaviors

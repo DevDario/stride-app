@@ -71,9 +71,7 @@ export const Toast: React.FC<ToastProps> = ({
         },
       ]}
     >
-      <Text color='background' weight='medium'>
-        {message}
-      </Text>
+      <Text className='text-neutral-0 font-sans-semi'>{message}</Text>
     </Animated.View>
   );
 };

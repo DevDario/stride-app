@@ -24,7 +24,7 @@ export const Badge: React.FC<BadgeProps> = ({ label, color = 'primary' }) => {
         },
       ]}
     >
-      <Text variant='caption' weight='medium' color='background'>
+      <Text variant='body-sm' className='font-sans-semi text-neutral-0'>
         {label}
       </Text>
     </View>

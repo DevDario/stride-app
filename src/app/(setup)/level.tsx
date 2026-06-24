@@ -65,7 +65,7 @@ export default function LevelScreen() {
 
       <Button
         title='Finish'
-        onPress={() => router.push('/(setup)/welcome')}
+        onPress={() => router.push('/(setup)/permissions')}
         disabled={!profile.level}
       />
     </View>
