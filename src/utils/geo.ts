@@ -1,5 +1,21 @@
 type Point = [number, number];
 
+export function pointInPolygon(
+  point: [number, number],
+  polygon: Point[]
+): boolean {
+  const [px, py] = point;
+  let inside = false;
+  for (let i = 0, j = polygon.length - 1; i < polygon.length; j = i++) {
+    const [xi, yi] = polygon[i];
+    const [xj, yj] = polygon[j];
+    if (yi > py !== yj > py && px < ((xj - xi) * (py - yi)) / (yj - yi) + xi) {
+      inside = !inside;
+    }
+  }
+  return inside;
+}
+
 export function chaikinSmooth(
   polygon: Point[],
   iterations: number = 3

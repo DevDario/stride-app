@@ -30,6 +30,7 @@ interface MapViewProps {
   mapStyle?: string | object;
   centerCoordinate?: [number, number];
   zoomLevel?: number;
+  onPress?: (e: any) => void;
 }
 
 export const StrideMapView = forwardRef<StrideMapViewRef, MapViewProps>(
@@ -39,6 +40,7 @@ export const StrideMapView = forwardRef<StrideMapViewRef, MapViewProps>(
       mapStyle = DEFAULT_MAP_STYLE,
       centerCoordinate = LUANDA_CENTER,
       zoomLevel = DEFAULT_ZOOM,
+      onPress,
     },
     ref
   ) {
@@ -75,6 +77,7 @@ export const StrideMapView = forwardRef<StrideMapViewRef, MapViewProps>(
         logo
         attribution
         androidView='texture'
+        onPress={onPress}
       >
         <Camera
           ref={cameraRef}

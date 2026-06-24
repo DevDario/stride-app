@@ -19,7 +19,7 @@ import {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useLocationStore } from 'src/features/map/store/locationStore';
 import { useTheme } from 'src/theme/ThemeProvider';
-import { chaikinSmooth } from 'src/utils/geo';
+import { chaikinSmooth, pointInPolygon } from 'src/utils/geo';
 
 import { AreaOverlayLabel } from '../components/AreaOverlayLabel';
 import { ChallengesLayer } from '../components/ChallengesLayer';
@@ -302,6 +302,31 @@ const LUANDA_DISTRICTS: {
   },
 ];
 
+function polygonCentroid(polygon: [number, number][]): [number, number] {
+  const n = polygon.length;
+  const sum = polygon.reduce(
+    (acc, [lng, lat]) => [acc[0] + lng, acc[1] + lat],
+    [0, 0]
+  );
+  return [sum[0] / n, sum[1] / n];
+}
+
+const DISTRICT_BREAKDOWNS: Record<
+  string,
+  { safety: number; vibe: number; crowd: number }
+> = {
+  ingombota: { safety: 3.8, vibe: 4.2, crowd: 3.5 },
+  samba: { safety: 3.5, vibe: 3.8, crowd: 3.2 },
+  maianga: { safety: 3.2, vibe: 3.5, crowd: 3.0 },
+  kilamba_kiaxi: { safety: 3.0, vibe: 3.2, crowd: 2.8 },
+  rangel: { safety: 2.8, vibe: 3.0, crowd: 2.5 },
+  sambizanga: { safety: 2.5, vibe: 2.8, crowd: 2.2 },
+  cazenga: { safety: 2.8, vibe: 3.0, crowd: 2.5 },
+  viana: { safety: 2.0, vibe: 2.5, crowd: 2.0 },
+  futungo_de_belas: { safety: 4.0, vibe: 4.5, crowd: 3.8 },
+  kilamba: { safety: 4.5, vibe: 4.8, crowd: 4.2 },
+};
+
 function CountdownNumber({
   value,
   onComplete,
@@ -419,6 +444,35 @@ export function MapScreen() {
     [overlayOpacity]
   );
 
+  const handleMapPress = useCallback(
+    (e: any) => {
+      if (!isIdle || !activeLayers.has('areaRatings')) return;
+      const { lng, lat } = e.nativeEvent.lngLat;
+
+      const district = LUANDA_DISTRICTS.find((d) =>
+        pointInPolygon([lng, lat], d.polygon)
+      );
+
+      if (district) {
+        setSelectedArea({
+          areaId: district.id,
+          name: district.name,
+          rating: district.rating,
+          breakdown: DISTRICT_BREAKDOWNS[district.id] ?? {
+            safety: 3,
+            vibe: 3,
+            crowd: 3,
+          },
+          centroid: polygonCentroid(district.polygon),
+          visible: true,
+        });
+      } else {
+        setSelectedArea(null);
+      }
+    },
+    [isIdle, activeLayers]
+  );
+
   async function handleStart() {
     const bg = await Location.getBackgroundPermissionsAsync();
     if (!bg.granted) {
@@ -522,7 +576,11 @@ export function MapScreen() {
   return (
     <View style={{ flex: 1, backgroundColor: colors.background }}>
       <PermissionGate>
-        <StrideMapView ref={mapRef} zoomLevel={DEFAULT_ZOOM}>
+        <StrideMapView
+          ref={mapRef}
+          zoomLevel={DEFAULT_ZOOM}
+          onPress={handleMapPress}
+        >
           <UserLocationDot />
 
           {activeLayers.has('areaRatings') &&
