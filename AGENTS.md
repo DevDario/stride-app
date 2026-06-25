@@ -134,6 +134,8 @@ Profiles: `development` (dev client), `preview` (internal), `production` (auto-i
 
 Never commit, amend, push, or create PRs unless the user explicitly asks. Stage files only when told. Ask before any git write operation.
 
+**Never bundle all changes into a single commit.** Group related files by their logical concern and create separate commits — each with a comprehensive message describing what the files implement, fix, or refactor.
+
 ## Pre-commit
 
 Husky v9. Running `pnpm lint-staged` on staged `*.{js,jsx,ts,tsx}` (eslint --fix + prettier --write) and `*.{json,css,md}` (prettier --write).
