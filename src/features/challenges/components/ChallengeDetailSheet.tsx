@@ -238,7 +238,7 @@ export const ChallengeDetailSheet = forwardRef<
               style={[
                 styles.routePreview,
                 {
-                  borderRadius: radii.sm,
+                  borderRadius: radii.lg,
                   backgroundColor: colors.background,
                 },
               ]}

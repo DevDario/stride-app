@@ -40,8 +40,8 @@ export const ChallengeCard = React.memo(function ChallengeCard({
         styles.container,
         {
           backgroundColor: colors.surface,
-          borderRadius: radii.md,
-          padding: spacing.sm,
+          borderRadius: radii.lg,
+          padding: spacing.md,
         },
       ]}
     >
@@ -50,7 +50,7 @@ export const ChallengeCard = React.memo(function ChallengeCard({
           style={[
             styles.thumbnail,
             {
-              borderRadius: radii.sm,
+              borderRadius: radii.lg,
               backgroundColor: colors.background,
             },
           ]}
