@@ -19,6 +19,7 @@ const FILTER_OPTIONS: { key: HistoryChallengeFilter; label: string }[] = [
 export function HistoryScreen() {
   const {
     profile,
+    isEmailVerified,
     runs,
     challenges,
     activeFilter,
@@ -51,7 +52,10 @@ export function HistoryScreen() {
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.scrollContent}
       >
-        <ProfileSummaryHeader profile={profile} />
+        <ProfileSummaryHeader
+          profile={profile}
+          isEmailVerified={isEmailVerified}
+        />
 
         <Text
           variant='title-md'

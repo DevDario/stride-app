@@ -1,3 +1,4 @@
+import { ShieldCheck } from 'lucide-react-native';
 import { View, StyleSheet } from 'react-native';
 
 import { Avatar } from '../../../components/Avatar';
@@ -7,6 +8,7 @@ import type { HistoryProfile } from '../types/history.types';
 
 interface ProfileSummaryHeaderProps {
   profile: HistoryProfile;
+  isEmailVerified: boolean;
 }
 
 function StatBlock({
@@ -37,7 +39,10 @@ const statStyles = StyleSheet.create({
   },
 });
 
-export function ProfileSummaryHeader({ profile }: ProfileSummaryHeaderProps) {
+export function ProfileSummaryHeader({
+  profile,
+  isEmailVerified,
+}: ProfileSummaryHeaderProps) {
   const { colors, spacing } = useTheme();
 
   return (
@@ -55,9 +60,17 @@ export function ProfileSummaryHeader({ profile }: ProfileSummaryHeaderProps) {
       <View style={styles.avatarRow}>
         <Avatar uri={profile.avatarUrl} initials={profile.initials} size={56} />
         <View style={styles.nameCol}>
-          <Text variant='title-sm' style={{ color: colors.text }}>
-            {profile.handle}
-          </Text>
+          <View style={styles.nameRow}>
+            <Text
+              variant='title-sm'
+              style={{ color: colors.text, marginRight: 4 }}
+            >
+              {profile.handle}
+            </Text>
+            {isEmailVerified && (
+              <ShieldCheck size={18} color='#10B981' strokeWidth={2} />
+            )}
+          </View>
         </View>
       </View>
 
@@ -82,6 +95,10 @@ const styles = StyleSheet.create({
   },
   nameCol: {
     flex: 1,
+  },
+  nameRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   statsRow: {
     flexDirection: 'row',

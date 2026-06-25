@@ -42,6 +42,8 @@ export function useHistoryViewModel() {
       null
     )?.toUpperCase() ?? null;
   const clerkAvatar = clerkUser?.imageUrl ?? null;
+  const isEmailVerified =
+    clerkUser?.primaryEmailAddress?.verification?.status === 'verified';
 
   const profileData = useMemo(() => {
     if (!profile) return null;
@@ -93,6 +95,7 @@ export function useHistoryViewModel() {
 
   return {
     profile: profileData,
+    isEmailVerified,
     runs,
     challenges: filteredChallenges,
     activeFilter,
