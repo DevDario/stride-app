@@ -3,6 +3,11 @@ import React from 'react';
 
 import { HomeScreen } from '../screens/HomeScreen';
 
+jest.mock('@clerk/expo', () => ({
+  useAuth: () => ({ signOut: jest.fn() }),
+  useUser: () => ({ user: null, isLoaded: true }),
+}));
+
 jest.mock('../../../theme/ThemeProvider', () => ({
   useTheme: () => ({
     colors: {

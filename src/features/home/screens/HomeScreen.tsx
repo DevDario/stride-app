@@ -1,3 +1,5 @@
+import { useAuth } from '@clerk/expo';
+import { Button } from '@components/Button';
 import { Header } from '@components/Header';
 import { Screen } from '@components/Screen';
 import { Text } from '@components/Text';
@@ -6,7 +8,7 @@ import { NearbyChallenges } from '@widgets/NearbyChallenges';
 import { RecentRuns } from '@widgets/RecentRuns';
 import { WeeklyRunsResume } from '@widgets/WeeklyRunsResume';
 import { useRouter } from 'expo-router';
-import { Bell } from 'lucide-react-native';
+import { Bell, LogOut } from 'lucide-react-native';
 import React from 'react';
 import { ScrollView, Pressable, StyleSheet } from 'react-native';
 
@@ -15,6 +17,7 @@ import { useTheme } from '../../../theme/ThemeProvider';
 export const HomeScreen = () => {
   const { colors } = useTheme();
   const router = useRouter();
+  const { signOut } = useAuth();
 
   return (
     <Screen safeArea>
@@ -43,6 +46,14 @@ export const HomeScreen = () => {
           Nearby Challenges
         </Text>
         <NearbyChallenges />
+
+        <Button
+          title='Logout'
+          variant='danger'
+          icon={LogOut}
+          onPress={() => signOut()}
+          className='w-full'
+        />
 
         <Text
           variant='title-md'
