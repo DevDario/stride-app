@@ -48,7 +48,7 @@ export default function RecentRuns() {
       ))}
       <View className='items-center pt-6 w-full'>
         <Text
-          onPress={() => router.push('/(tabs)/home')}
+          onPress={() => router.push('/(tabs)/history')}
           variant='label'
           className='font-light text-neutral-500 px-4 text-lg'
         >
