@@ -1,5 +1,5 @@
 import { Marker } from '@maplibre/maplibre-react-native';
-import { FlagTriangleRight } from 'lucide-react-native';
+import { LandPlot } from 'lucide-react-native';
 import { Text, View } from 'react-native';
 import { useTheme } from 'src/theme/ThemeProvider';
 
@@ -17,7 +17,7 @@ export function ChallengesLayer({ challenges }: ChallengesLayerProps) {
       {challenges.map((ch) => (
         <Marker key={ch.id} id={ch.id} lngLat={ch.coordinate}>
           <View style={{ alignItems: 'center' }}>
-            <FlagTriangleRight size={20} color={colors.primary} />
+            <LandPlot size={20} color={colors.primary} />
             <Text
               style={{
                 fontSize: 10,

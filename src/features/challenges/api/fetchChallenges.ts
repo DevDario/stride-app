@@ -1,0 +1,168 @@
+import { apiClient } from '@api/client';
+
+import type { Challenge } from '../types/challenges.types';
+
+const MOCK_CHALLENGES: Challenge[] = [
+  {
+    id: '1',
+    title: 'Samba Loop Challenge',
+    creatorHandle: '@Runner_X441',
+    description: 'Run the famous Samba Loop trail and beat the record time.',
+    distance: 10,
+    timeGoal: '00:45:00',
+    participantCount: 128,
+    location: 'Samba',
+    isFeatured: true,
+    routeCoordinates: [
+      [-8.839, 13.234],
+      [-8.841, 13.237],
+      [-8.843, 13.235],
+      [-8.845, 13.238],
+      [-8.842, 13.241],
+      [-8.839, 13.239],
+      [-8.838, 13.236],
+    ],
+    endsAt: '2026-07-15T23:59:59Z',
+    status: 'active',
+    distanceFromUser: null,
+    topParticipants: [
+      { id: 'p1', handle: '@Runner_X441', time: '00:42:15', isLeader: true },
+      { id: 'p2', handle: '@carla_runs', time: '00:43:50' },
+      { id: 'p3', handle: '@joao_fit', time: '00:44:12' },
+    ],
+    totalParticipants: 128,
+  },
+  {
+    id: '2',
+    title: 'Talatona Loop',
+    creatorHandle: '@carla_runs',
+    description: 'Scenic loop through Talatona with moderate elevation.',
+    distance: 8,
+    timeGoal: '00:38:00',
+    participantCount: 64,
+    location: 'Talatona',
+    isFeatured: false,
+    routeCoordinates: [
+      [-8.899, 13.201],
+      [-8.901, 13.204],
+      [-8.903, 13.202],
+      [-8.9, 13.199],
+    ],
+    endsAt: '2026-07-20T23:59:59Z',
+    status: 'active',
+    distanceFromUser: 2.1,
+    topParticipants: [
+      { id: 'p4', handle: '@carla_runs', time: '00:36:40', isLeader: true },
+      { id: 'p5', handle: '@ana_running', time: '00:37:10' },
+    ],
+    totalParticipants: 64,
+  },
+  {
+    id: '3',
+    title: 'Miramar Coastal',
+    creatorHandle: '@joao_fit',
+    description: 'Coastal run along Miramar beachfront with ocean views.',
+    distance: 12,
+    timeGoal: '01:00:00',
+    participantCount: 42,
+    location: 'Miramar',
+    isFeatured: false,
+    routeCoordinates: [
+      [-8.826, 13.238],
+      [-8.828, 13.24],
+      [-8.831, 13.239],
+      [-8.833, 13.242],
+      [-8.83, 13.244],
+    ],
+    endsAt: '2026-07-25T23:59:59Z',
+    status: 'active',
+    distanceFromUser: 3.5,
+    topParticipants: [
+      { id: 'p6', handle: '@joao_fit', time: '00:57:30', isLeader: true },
+      { id: 'p7', handle: '@pedro_run', time: '00:58:45' },
+      { id: 'p8', handle: '@luisa_run', time: '00:59:20' },
+    ],
+    totalParticipants: 42,
+  },
+  {
+    id: '4',
+    title: 'Marginal Sunrise Sprint',
+    creatorHandle: '@ana_running',
+    description: 'Early morning sprint along the Marginal boardwalk.',
+    distance: 5,
+    timeGoal: '00:22:00',
+    participantCount: 256,
+    location: 'Marginal',
+    isFeatured: false,
+    routeCoordinates: [
+      [-8.813, 13.228],
+      [-8.815, 13.23],
+      [-8.818, 13.229],
+      [-8.816, 13.232],
+    ],
+    endsAt: '2026-07-10T23:59:59Z',
+    status: 'active',
+    distanceFromUser: 1.5,
+    topParticipants: [
+      { id: 'p9', handle: '@ana_running', time: '00:20:15', isLeader: true },
+      { id: 'p10', handle: '@Runner_X441', time: '00:21:00' },
+    ],
+    totalParticipants: 256,
+  },
+  {
+    id: '5',
+    title: 'Ilha do Cabo Explorer',
+    creatorHandle: '@pedro_run',
+    description: 'Explore the northern tip of Ilha do Cabo peninsula.',
+    distance: 15,
+    timeGoal: '01:15:00',
+    participantCount: 18,
+    location: 'Ilha do Cabo',
+    isFeatured: false,
+    routeCoordinates: [
+      [-8.76, 13.215],
+      [-8.762, 13.218],
+      [-8.765, 13.216],
+      [-8.763, 13.22],
+      [-8.76, 13.217],
+    ],
+    endsAt: '2026-07-30T23:59:59Z',
+    status: 'upcoming',
+    distanceFromUser: 8.2,
+    totalParticipants: 18,
+  },
+  {
+    id: '6',
+    title: 'Benfica Trail Run',
+    creatorHandle: '@luisa_run',
+    description: 'Trail run through Benfica nature reserve.',
+    distance: 10,
+    timeGoal: '00:55:00',
+    participantCount: 31,
+    location: 'Benfica',
+    isFeatured: false,
+    routeCoordinates: [
+      [-8.978, 13.13],
+      [-8.98, 13.133],
+      [-8.983, 13.131],
+      [-8.981, 13.135],
+      [-8.978, 13.132],
+    ],
+    endsAt: '2026-07-05T23:59:59Z',
+    status: 'active',
+    distanceFromUser: 5.7,
+    topParticipants: [
+      { id: 'p11', handle: '@luisa_run', time: '00:52:40', isLeader: true },
+    ],
+    totalParticipants: 31,
+  },
+];
+
+export async function fetchChallenges(): Promise<Challenge[]> {
+  const { data } = await apiClient.get<Challenge[]>('/api/challenges');
+  return data;
+}
+
+export function getMockChallenges(): Challenge[] {
+  return MOCK_CHALLENGES;
+}

@@ -220,3 +220,38 @@ Auth gating is in `src/app/_layout.tsx` (AuthGuard), `(setup)/_layout.tsx`, and 
 - [ ] **Race counter overlay** — create a full-screen timer overlay (screenshot → Claude → prompt → implement)
 - [x] **Migrate permissions to onboarding** — request location + notification permissions during `(setup)/` flow to match Duolingo-style UX (all permissions upfront)
 - [ ] **Test foreground service on real Android device** — emulator may skip some notification behaviors
+
+### 13. Challenges Tab Screen (DONE)
+
+- Created `src/features/challenges/` feature folder with full structure:
+  - **`types/challenges.types.ts`** — `Challenge`, `ChallengeParticipant`, `ChallengeFilter` (union: `'all' | 'nearby' | 'endingSoon' | 'mostPopular'`)
+  - **`api/fetchChallenges.ts`** — typed API call via `apiClient` + 6 mock challenges (Luanda-localized: Samba Loop, Talatona, Miramar, Marginal, Ilha, Benfica)
+  - **`hooks/useChallenges.ts`** — React Query hook with `placeholderData`, client-side filtering via `filterChallenges()` sorted by filter type, featured-first ordering
+  - **`components/FilterChips.tsx`** — horizontally scrollable single-select chip row, active chip uses `colors.primary` bg, inactive uses `colors.surface` + border, consistent with MapLayersBottomSheet pill pattern
+  - **`components/RouteSparkline.tsx`** — lightweight SVG sparkline via `react-native-svg` `Polyline`, normalizes `[lng, lat][]` coordinates to pixel space, memoized with `useMemo`
+  - **`components/FeaturedChallengeCard.tsx`** — distinct layout for first item: FEATURED Badge, sparkline preview (280×64), title, creator handle, stats row (distance · time goal · runner count w/ Users icon), Accept button. Elevated shadow. `React.memo` wrapped.
+  - **`components/ChallengeCard.tsx`** — standard card for subsequent items: sparkline thumbnail (56×56), title, stats line (distance · time · participants), distance-from-user label (conditional via `MapPin` icon + km), time-remaining countdown badge (pill, colored). `React.memo` wrapped.
+  - **`components/ChallengeDetailSheet.tsx`** — `@gorhom/bottom-sheet` with `['60%', '85%']` snap points. Content: title, creator row (Avatar + handle), status Badge (`ACTIVE · X days left`), stats card (distance + time goal + 80×64 sparkline preview), leaderboard section (Crown/Medal icons, Avatar, handle, LEADER Badge for #1, time), expandable "+N more participants" row, Accept + View Route buttons
+  - **`screens/ChallengesScreen.tsx`** — main screen with Header (title + subtitle), FilterChips, FlatList (optimized: `removeClippedSubviews`, `windowSize=5`, `maxToRenderPerBatch=10`), renders Featured card first then standard cards, memoized callbacks + renderItem, BottomSheet overlay
+- Created `src/app/(tabs)/challenges.tsx` route file following the same pattern as `map.tsx`
+- Tab icon: changed `Flag` → `LandPlot` in `(tabs)/_layout.tsx`
+- Map layers: changed `FlagTriangleRight` → `LandPlot` in `ChallengesLayer.tsx` and `MapLayersBottomSheet.tsx`
+- Empty state handled with `EmptyState` component (icon + message + CTA)
+- Loading state handled with centered `Spinner`
+- Data-driven ready: all types/interfaces in place for real API integration
+
+### 14. MVVM Refactor — ViewModels for ChallengesScreen + MapScreen (DONE)
+
+- Created `useChallengesViewModel` (`src/features/challenges/hooks/useChallengesViewModel.tsx`):
+  - Owns `activeFilter` state, `selectedChallenge` state, `sheetRef`, all callbacks (`handleChallengePress`, `handleAccept`, `handleViewRoute`, `handleSheetClose`)
+  - Returns `renderItem` + `keyExtractor` for FlatList (memoized, JSX-inclusive → `.tsx` extension)
+  - Composes `useChallenges` data hook internally, exposes `isLoading`/`isEmpty`/`challenges`
+- `ChallengesScreen.tsx` now purely presentational — destructures viewmodel, renders JSX only (dropped from 17 lines of state/logic to ~5)
+- Created `useMapViewModel` (`src/features/map/hooks/useMapViewModel.tsx`):
+  - Extracted all state: `countdownKey`, `overlayOpacity`, `selectedArea`, animation ref, map/postRun refs
+  - Extracted all external hooks: `useRunTracking`, `useMapLayers`, `useChallengesData`, `useRoutesData`, `useRecordsData`, `useLocationStore`
+  - Extracted all callbacks: `handleMapPress`, `handleStart`, `handleCountdownComplete`, `handlePauseResume`, `handleStop`, `handlePostRunClose`, `handleToggleLock`, `animateOverlayTo`
+  - Extracted `useEffect` for camera tracking follow
+  - Moved constants (`LUANDA_DISTRICTS`, `LUANDA_CENTER`, `DEFAULT_ZOOM`) + `polygonCentroid` helper alongside
+  - `MapScreen.tsx` dropped from ~230 lines of state/logic to ~30 lines of pure rendering
+- Fixed pre-existing bug: `EmptyState.tsx` referenced missing `not-found.png` asset — removed broken image require

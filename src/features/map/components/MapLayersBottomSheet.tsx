@@ -1,10 +1,5 @@
 import type { LucideIcon } from 'lucide-react-native';
-import {
-  FlagTriangleRight,
-  MapPinned,
-  Route,
-  Trophy,
-} from 'lucide-react-native';
+import { LandPlot, MapPinned, Route, Trophy } from 'lucide-react-native';
 import { useEffect, useMemo } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import Animated, {
@@ -24,7 +19,7 @@ interface PillDefinition {
 
 const PILLS: PillDefinition[] = [
   { key: 'areaRatings', label: 'Area Ratings', Icon: MapPinned },
-  { key: 'challenges', label: 'Challenges', Icon: FlagTriangleRight },
+  { key: 'challenges', label: 'Challenges', Icon: LandPlot },
   { key: 'routes', label: 'My Routes', Icon: Route },
   { key: 'records', label: 'Records', Icon: Trophy },
 ];

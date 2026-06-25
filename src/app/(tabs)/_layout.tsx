@@ -1,5 +1,5 @@
 import { Tabs } from 'expo-router';
-import { Flag, Home, Map, User, Watch } from 'lucide-react-native';
+import { Home, LandPlot, Map, User, Watch } from 'lucide-react-native';
 import { View } from 'react-native';
 
 import { useTheme } from '../../theme/ThemeProvider';
@@ -39,7 +39,9 @@ export default function TabsLayout() {
           name='challenges'
           options={{
             title: 'Challenges',
-            tabBarIcon: ({ size, color }) => <Flag size={size} color={color} />,
+            tabBarIcon: ({ size, color }) => (
+              <LandPlot size={size} color={color} />
+            ),
           }}
         />
         <Tabs.Screen
