@@ -255,3 +255,24 @@ Auth gating is in `src/app/_layout.tsx` (AuthGuard), `(setup)/_layout.tsx`, and 
   - Moved constants (`LUANDA_DISTRICTS`, `LUANDA_CENTER`, `DEFAULT_ZOOM`) + `polygonCentroid` helper alongside
   - `MapScreen.tsx` dropped from ~230 lines of state/logic to ~30 lines of pure rendering
 - Fixed pre-existing bug: `EmptyState.tsx` referenced missing `not-found.png` asset — removed broken image require
+
+### 15. History Screen (DONE)
+
+- Created `src/features/history/` feature folder with full structure:
+  - **`types/history.types.ts`** — `HistoryProfile`, `RunHistoryItem`, `HistoryChallengeFilter` (`'created' | 'participated'`), `HistoryChallenge`
+  - **`api/fetchHistoryData.ts`** — typed API functions for profile, run history, and user challenges via `apiClient` + 3 mock data sets (profile with 47 runs/342km/12 won, 6 run entries with varying dates/areas, 5 user challenges split by created/participated)
+  - **`hooks/useHistoryData.ts`** — 3 React Query hooks (`useProfile`, `useRunHistory`, `useHistoryChallenges`) with `placeholderData` and 5min stale time
+  - **`hooks/useHistoryViewModel.tsx`** — MVVM hook owning filter state (`created`/`participated`), selected run for detail bottom sheet, sheet ref, memoized filtered challenges list, memoized `handleRunPress`/`handleSheetClose` callbacks, memoized `renderRunItem`/`renderChallengeItem` renderers
+  - **`components/ProfileSummaryHeader.tsx`** — avatar (56px via `Avatar`), handle, stats row (Runs/km/Won themed stat blocks), theme token border
+  - **`components/RunHistoryItemCard.tsx`** — pressable card with `RouteSparkline` thumbnail (56×56), date/area/stats row (`distance · time · pace`), `ChevronRight` indicator, `React.memo` wrapped
+  - **`components/MiniChallengeCard.tsx`** — compact card for user challenges: title, meta row (participants icon+count, clock+time remaining), status `Badge` reusing `primary`/`secondary`/`danger` variants. `React.memo` wrapped.
+  - **`components/RunDetailSheet.tsx`** — `@gorhom/bottom-sheet` with `['60%', '80%']` snap points. Content: title/date-area header, larger `RouteSparkline` (300×120), 2×2 stats grid (Distance, Time, Avg Pace, Elevation Gain — themed `StatCard` with surface+border), conditional challenge standing banner (`Trophy` icon + `primary` accent bg with placement text), full-width X+Close button
+  - **`screens/HistoryScreen.tsx`** — purely presentational, calls `useHistoryViewModel` and destructures all state/handlers. `ScrollView` layout: `ProfileSummaryHeader` → "My Runs" section with `.map()` of `RunHistoryItemCard` → "My Challenges" section with inline filter chips (Created/Participated, same pill styling as `FilterChips`) + `.map()` of `MiniChallengeCard`. Empty state handled for both sections via `EmptyState` component. Loading state with centered `Spinner`.
+- Created `src/app/(tabs)/history.tsx` route file following the same thin-route pattern as other tabs (imports `HistoryScreen`, delegates to it, no logic)
+- Fixed `RecentRuns` "See all" navigation: `router.push('/(tabs)/home')` → `router.push('/(tabs)/history')`
+
+### Next up
+
+- [ ] Add tests for History screen (`HistoryScreen.test.tsx`)
+- [ ] Test foreground service on real Android device
+- [ ] Add OSRM route visualization on the map
