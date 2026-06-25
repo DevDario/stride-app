@@ -217,15 +217,14 @@ export const ChallengeDetailSheet = forwardRef<
             styles.statsCard,
             {
               backgroundColor: colors.surface,
-              borderRadius: radii.md,
-              borderColor: colors.border,
+              borderRadius: radii.lg,
               marginBottom: spacing.md,
             },
           ]}
         >
           <View style={styles.statsCardRow}>
             <View>
-              <Text variant='title-xl' style={{ color: colors.text }}>
+              <Text variant='title-md' style={{ color: colors.text }}>
                 {challenge.distance} km
               </Text>
               <Text
@@ -266,8 +265,6 @@ export const ChallengeDetailSheet = forwardRef<
             key={participant.id}
             participant={participant}
             rank={index + 1}
-            isExpanded={participantsExpanded}
-            onToggle={() => {}}
             isLast={index === visibleParticipants.length - 1 && extraCount <= 0}
           />
         ))}
@@ -304,7 +301,7 @@ export const ChallengeDetailSheet = forwardRef<
           />
         </View>
 
-        <View style={{ height: 40 }} />
+        <View style={{ height: 20 }} />
       </BottomSheetScrollView>
     </BottomSheet>
   );
@@ -323,7 +320,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
   },
   statsCard: {
-    borderWidth: 1,
     padding: 16,
   },
   statsCardRow: {

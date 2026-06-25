@@ -41,7 +41,6 @@ export const ChallengeCard = React.memo(function ChallengeCard({
         {
           backgroundColor: colors.surface,
           borderRadius: radii.md,
-          borderColor: colors.border,
           padding: spacing.sm,
         },
       ]}
@@ -131,7 +130,6 @@ export const ChallengeCard = React.memo(function ChallengeCard({
 
 const styles = StyleSheet.create({
   container: {
-    borderWidth: 1,
     marginHorizontal: 16,
     marginBottom: 8,
   },

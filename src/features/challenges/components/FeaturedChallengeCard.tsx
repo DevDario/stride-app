@@ -30,7 +30,6 @@ export const FeaturedChallengeCard = React.memo(function FeaturedChallengeCard({
         {
           backgroundColor: colors.surface,
           borderRadius: radii.lg,
-          borderColor: colors.border,
           padding: spacing.md,
         },
       ]}
@@ -100,14 +99,8 @@ export const FeaturedChallengeCard = React.memo(function FeaturedChallengeCard({
 
 const styles = StyleSheet.create({
   container: {
-    borderWidth: 1,
     marginHorizontal: 16,
     marginBottom: 12,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.1,
-    shadowRadius: 12,
-    elevation: 4,
   },
   sparklineContainer: {
     alignItems: 'center',

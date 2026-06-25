@@ -36,7 +36,6 @@ export function FilterChips({ activeFilter, onSelect }: FilterChipsProps) {
               {
                 borderRadius: radii.full,
                 backgroundColor: isActive ? colors.primary : colors.surface,
-                borderColor: isActive ? colors.primary : colors.border,
               },
             ]}
           >
@@ -60,11 +59,11 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     gap: 8,
     paddingHorizontal: 16,
-    paddingVertical: 8,
+    height: 40,
+    marginBottom: 12,
   },
   chip: {
     paddingHorizontal: 16,
-    paddingVertical: 8,
-    borderWidth: 1,
+    paddingVertical: 10,
   },
 });

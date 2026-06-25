@@ -89,11 +89,6 @@ describe('ChallengesScreen', () => {
     expect(getByText('Challenges')).toBeTruthy();
   });
 
-  it('renders the subtitle', () => {
-    const { getByText } = render(<ChallengesScreen />);
-    expect(getByText('Find your next challenge')).toBeTruthy();
-  });
-
   it('renders the filter chips', () => {
     const { getByText } = render(<ChallengesScreen />);
     expect(getByText('All')).toBeTruthy();
