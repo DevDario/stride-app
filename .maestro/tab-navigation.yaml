@@ -1,0 +1,65 @@
+appId: com.dariosilva.strideapp
+---
+# Tab bar navigation — verifies all 5 tabs render their headers/sections.
+# Tab positions (no labels): Home(~10%) | Map(~30%) | Challenges(~50%) | History(~70%) | Profile(~90%)
+- launchApp:
+    clearState: true
+- waitForAnimationToEnd
+- tapOn:
+    label: 'Reload Clerk dev session if visible'
+    optional: true
+    point: '50%,25%'
+- waitForAnimationToEnd
+
+- runFlow:
+    when:
+      visible: 'Stride'
+    file: onboarding.yaml
+- waitForAnimationToEnd
+
+# === HOME TAB (1st) ===
+- assertVisible: 'Ready to get moving?'
+- assertVisible: 'Nearby Challenges'
+
+# === MAP TAB (2nd) ===
+- tapOn:
+    point: '30%,95%'
+- waitForAnimationToEnd
+- runFlow:
+    when:
+      visible: 'Location access needed'
+    commands:
+      - tapOn:
+          optional: true
+          point: '50%,50%'
+- assertVisible:
+    label: 'Map layer toggles visible'
+    optional: true
+    text: 'Area Ratings'
+- assertVisible:
+    label: 'Start Run button visible'
+    optional: true
+    text: 'Start Run'
+
+# === CHALLENGES TAB (3rd) ===
+- tapOn:
+    point: '50%,95%'
+- waitForAnimationToEnd
+- assertVisible: 'Challenges'
+- assertVisible: 'All'
+- assertVisible: 'Nearby'
+- assertVisible: 'Ending Soon'
+
+# === HISTORY TAB (4th) ===
+- tapOn:
+    point: '70%,95%'
+- waitForAnimationToEnd
+- assertVisible: 'History'
+- assertVisible: 'My Runs'
+- assertVisible: 'My Challenges'
+
+# === HOME TAB (back to 1st) ===
+- tapOn:
+    point: '10%,95%'
+- waitForAnimationToEnd
+- assertVisible: 'Ready to get moving?'

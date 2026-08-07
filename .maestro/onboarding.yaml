@@ -1,0 +1,46 @@
+appId: com.dariosilva.strideapp
+---
+# Splash → Onboard 1-4 → Login redirect
+- launchApp:
+    clearState: true
+- waitForAnimationToEnd
+
+# Splash screen
+- assertVisible: "Stride"
+- assertVisible: "Test your limit"
+
+# Auto-navigates to onboard-1 after 2s
+- waitForAnimationToEnd
+- waitForAnimationToEnd
+
+# Onboard 1: "Run with your new companion"
+- assertVisible: "Run with your new companion"
+- assertVisible: "Track every step"
+- tapOn: "Start"
+
+# Onboard 2: "Spot challenges around the city"
+- waitForAnimationToEnd
+- assertVisible: "Spot challenges around the city and start running!"
+- assertVisible: "Find live challenges near you"
+- tapOn: "Next"
+
+# Onboard 3: "Explore your area without leaving home"
+- waitForAnimationToEnd
+- assertVisible: "Explore your area without leaving home"
+- assertVisible: "Scope out routes, check area ratings"
+- tapOn: "Almost there"
+
+# Onboard 4: "Create your own challenges around the city!"
+- waitForAnimationToEnd
+- assertVisible: "Create your own challenges around the city!"
+- assertVisible: "Set the pace, pick the route"
+- tapOn: "Enter"
+
+# After Enter → login screen
+- waitForAnimationToEnd
+- assertVisible: "Login"
+- assertVisible: "Email"
+- assertVisible: "Password"
+- assertVisible: "Continue with Google"
+- assertVisible: "Continue with Facebook"
+- assertVisible: "Need an account?"

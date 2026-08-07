@@ -1,0 +1,49 @@
+appId: com.dariosilva.strideapp
+---
+# Challenges screen — filter chips and list.
+# Tab bar: Home | Map | Challenges | History | Profile
+- launchApp:
+    clearState: true
+- waitForAnimationToEnd
+- tapOn:
+    label: 'Reload Clerk dev session if visible'
+    optional: true
+    point: '50%,25%'
+- waitForAnimationToEnd
+
+- runFlow:
+    when:
+      visible: 'Stride'
+    file: onboarding.yaml
+
+# Navigate to Challenges tab (3rd tab — ~50%)
+- tapOn:
+    label: 'Tap Challenges tab'
+    optional: true
+    point: '50%,95%'
+- waitForAnimationToEnd
+
+# === CHALLENGES SCREEN ===
+- assertVisible: 'Challenges'
+
+# Filter chips
+- assertVisible: 'All'
+- assertVisible: 'Nearby'
+- assertVisible: 'Ending Soon'
+- assertVisible: 'Most Popular'
+
+- tapOn: 'All'
+- waitForAnimationToEnd
+- tapOn: 'Nearby'
+- waitForAnimationToEnd
+- tapOn: 'Ending Soon'
+- waitForAnimationToEnd
+- tapOn: 'Most Popular'
+- waitForAnimationToEnd
+
+# Empty state check
+- runFlow:
+    when:
+      visible: 'No challenges found'
+    commands:
+      - assertVisible: 'Try a different filter or check back later'

@@ -1,5 +1,72 @@
 appId: com.dariosilva.strideapp
 ---
+# Home screen — widgets, weekly summary, and navigation.
 - launchApp:
     clearState: true
-- tapOn: "Reload User"
+- waitForAnimationToEnd
+
+# If Clerk dev mode is active, reload session
+- tapOn:
+    label: 'Reload Clerk dev session if visible'
+    optional: true
+    point: '50%,25%'
+- waitForAnimationToEnd
+
+- runFlow:
+    when:
+      visible: 'Stride'
+    file: onboarding.yaml
+
+# === HOME SCREEN ===
+- assertVisible: 'Ready to get moving?'
+
+# Weekly summary — empty state (no runs yet)
+- runFlow:
+    when:
+      visible: 'No runs this week yet'
+    commands:
+      - assertVisible: 'Start your first run to see your weekly summary'
+      - assertVisible: 'Start running'
+
+# Weekly summary — data state
+- runFlow:
+    when:
+      visible: 'Running last week'
+    commands:
+      - assertVisible: 'Calories'
+      - assertVisible: 'Elevation Gain'
+      - assertVisible: 'Avg. Pace'
+
+# Current week calendar (always visible)
+- assertVisible: 'S'
+- assertVisible: 'M'
+- assertVisible: 'T'
+- assertVisible: 'W'
+- assertVisible: 'T'
+- assertVisible: 'F'
+- assertVisible: 'S'
+
+# Nearby challenges section title (always visible)
+- assertVisible: 'Nearby Challenges'
+
+# Nearby challenges — empty state
+- runFlow:
+    when:
+      visible: 'No challenges yet'
+    commands:
+      - assertVisible: 'Look in other areas or start your own'
+
+# Your recent runs section title (always visible)
+- waitForAnimationToEnd
+- assertVisible: 'Your recent runs'
+
+# Recent runs — empty state
+- runFlow:
+    when:
+      visible: 'No runs recorded yet'
+    commands:
+      - assertVisible: 'Your running history will appear here'
+      - assertVisible: 'Start running'
+
+# Logout button
+- assertVisible: 'Logout'

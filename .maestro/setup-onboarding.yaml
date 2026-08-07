@@ -1,0 +1,104 @@
+appId: com.dariosilva.strideapp
+---
+# Post-auth onboarding flow — KnowYou through Welcome.
+# Requires being signed in (Clerk dev mode auto-signs in).
+- launchApp:
+    clearState: true
+- waitForAnimationToEnd
+- tapOn:
+    label: 'Reload Clerk dev session if visible'
+    optional: true
+    point: '50%,25%'
+- waitForAnimationToEnd
+
+# If not signed in, navigate through marketing onboarding first
+- runFlow:
+    when:
+      visible: 'Stride'
+    file: onboarding.yaml
+
+# === KNOW YOU ===
+- runFlow:
+    when:
+      visible: "We'd love to get to know you better"
+    commands:
+      - assertVisible: 'Your name'
+      - assertVisible: 'Birth date'
+      - assertVisible: 'Gender'
+      - assertVisible: 'Continue'
+
+# === FREQUENCY ===
+- runFlow:
+    when:
+      visible: 'How often do you run?'
+    commands:
+      - assertVisible: 'weekly'
+      - assertVisible: 'swipe up/down to change'
+      - assertVisible: 'Next'
+      - tapOn: 'Next'
+
+# === SCHEDULE ===
+- runFlow:
+    when:
+      visible: 'When do you love to run?'
+    commands:
+      - assertVisible: 'Morning Run'
+      - assertVisible: 'Midday Mile'
+      - assertVisible: 'Afternoon Session'
+      - assertVisible: 'Evening Run'
+      - assertVisible: 'Night Session'
+      - assertVisible: 'Night Owl'
+      # Select one schedule to enable Next
+      - tapOn: 'Morning Run'
+      - waitForAnimationToEnd
+      - tapOn: 'Next'
+
+# === LEVEL ===
+- runFlow:
+    when:
+      visible: "What's your current level?"
+    commands:
+      - assertVisible: 'Beginner'
+      - assertVisible: 'Casual'
+      - assertVisible: 'Regular'
+      - assertVisible: 'Competitive'
+      - tapOn: 'Regular'
+      - waitForAnimationToEnd
+      - tapOn: 'Finish'
+
+# === PERMISSIONS (setup) ===
+- runFlow:
+    when:
+      visible: 'Let us find you'
+    commands:
+      - assertVisible: 'Stride uses your location'
+      - tapOn: 'Skip'
+
+- runFlow:
+    when:
+      visible: 'Stay in the loop'
+    commands:
+      - assertVisible: 'Skip'
+      - tapOn: 'Skip'
+
+- runFlow:
+    when:
+      visible: 'All set'
+    commands:
+      - assertVisible: 'Continue'
+      - tapOn: 'Continue'
+
+# === WELCOME ===
+- runFlow:
+    when:
+      visible: 'Welcome'
+    commands:
+      - assertVisible: 'Your profile is set'
+      - tapOn: 'Done'
+
+# === HOME SCREEN (post-setup) ===
+- waitForAnimationToEnd
+- assertVisible:
+    label: 'Home screen after setup complete'
+    optional: true
+    text: 'Ready to get moving?'

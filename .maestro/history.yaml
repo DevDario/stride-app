@@ -1,0 +1,52 @@
+appId: com.dariosilva.strideapp
+---
+# History screen — profile summary, runs, challenges filters.
+# Tab bar: Home | Map | Challenges | History | Profile
+- launchApp:
+    clearState: true
+- waitForAnimationToEnd
+- tapOn:
+    label: 'Reload Clerk dev session if visible'
+    optional: true
+    point: '50%,25%'
+- waitForAnimationToEnd
+
+- runFlow:
+    when:
+      visible: 'Stride'
+    file: onboarding.yaml
+
+# Navigate to History tab (4th tab — ~70%)
+- tapOn:
+    label: 'Tap History tab'
+    optional: true
+    point: '70%,95%'
+- waitForAnimationToEnd
+
+# === HISTORY SCREEN ===
+- assertVisible: 'History'
+
+# Profile summary stats
+- assertVisible: 'Runs'
+- assertVisible: 'km'
+- assertVisible: 'Won'
+
+# Section headers
+- assertVisible: 'My Runs'
+- assertVisible: 'My Challenges'
+
+# Challenge filter chips
+- assertVisible: 'Created'
+- assertVisible: 'Participated'
+
+- tapOn: 'Created'
+- waitForAnimationToEnd
+- tapOn: 'Participated'
+- waitForAnimationToEnd
+
+# Empty states
+- runFlow:
+    when:
+      visible: 'No runs yet'
+    commands:
+      - assertVisible: 'Complete your first run to see it here'

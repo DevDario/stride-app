@@ -1,0 +1,40 @@
+appId: com.dariosilva.strideapp
+---
+# Login and Signup screen verification
+- launchApp:
+    clearState: true
+
+- waitForAnimationToEnd
+- waitForAnimationToEnd
+- waitForAnimationToEnd
+- tapOn: "Start"
+- waitForAnimationToEnd
+- tapOn: "Next"
+- waitForAnimationToEnd
+- tapOn: "Almost there"
+- waitForAnimationToEnd
+- tapOn: "Enter"
+- waitForAnimationToEnd
+
+# === LOGIN SCREEN ===
+- assertVisible: "Login"
+- assertVisible: "Email"
+- assertVisible: "Password"
+- tapOn: "Login"
+# Should show error (empty fields) or proceed with auth
+- waitForAnimationToEnd
+
+- tapOn: "Sign Up"
+- waitForAnimationToEnd
+
+# === SIGNUP SCREEN ===
+- assertVisible: "Create an account"
+- assertVisible: "Email"
+- assertVisible: "Password"
+- assertVisible: "Continue with Google"
+- assertVisible: "Continue with Facebook"
+- assertVisible: "Already have an account?"
+
+- tapOn: "Log In"
+- waitForAnimationToEnd
+- assertVisible: "Login"

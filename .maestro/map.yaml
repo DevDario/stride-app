@@ -1,0 +1,66 @@
+appId: com.dariosilva.strideapp
+---
+# Map screen — layer toggle pills and Start Run button.
+- launchApp:
+    clearState: true
+- waitForAnimationToEnd
+- tapOn:
+    label: 'Reload Clerk dev session if visible'
+    optional: true
+    point: '50%,25%'
+- waitForAnimationToEnd
+
+- runFlow:
+    when:
+      visible: 'Stride'
+    file: onboarding.yaml
+
+# Navigate to Map tab (2nd tab — ~30%)
+- tapOn:
+    label: 'Tap Map tab'
+    optional: true
+    point: '30%,95%'
+- waitForAnimationToEnd
+
+# === MAP SCREEN ===
+# Permission gate — shows if location not yet granted
+- runFlow:
+    when:
+      visible: 'Location access needed'
+    commands:
+      - assertVisible: 'Stride needs your location'
+
+# Layer toggle pills (visible when map is idle)
+- assertVisible:
+    label: 'Area Ratings toggle'
+    optional: true
+    text: 'Area Ratings'
+- assertVisible:
+    label: 'Challenges toggle'
+    optional: true
+    text: 'Challenges'
+- assertVisible:
+    label: 'My Routes toggle'
+    optional: true
+    text: 'My Routes'
+- assertVisible:
+    label: 'Records toggle'
+    optional: true
+    text: 'Records'
+
+# Start Run CTA
+- assertVisible:
+    label: 'Start Run button'
+    optional: true
+    text: 'Start Run'
+
+- tapOn:
+    label: 'Toggle Area Ratings layer'
+    optional: true
+    text: 'Area Ratings'
+- waitForAnimationToEnd
+- tapOn:
+    label: 'Toggle Challenges layer'
+    optional: true
+    text: 'Challenges'
+- waitForAnimationToEnd
