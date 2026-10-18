@@ -4,17 +4,21 @@ import { Text } from '@components/Text';
 import * as Location from 'expo-location';
 import * as Notifications from 'expo-notifications';
 import { useRouter } from 'expo-router';
-import { Bell, Crosshair, ShieldCheck } from 'lucide-react-native';
+import { Bell, Crosshair, MapPinned, ShieldCheck } from 'lucide-react-native';
 import { useCallback, useEffect, useState } from 'react';
-import { Linking, Platform, View } from 'react-native';
+import { Linking, View } from 'react-native';
 
-type Phase = 'location' | 'notifications' | 'done';
+import { useTheme } from '../../theme/ThemeProvider';
+
+type Phase = 'location' | 'background' | 'notifications' | 'done';
 
 export default function PermissionsScreen() {
   const router = useRouter();
   const { user } = useUser();
+  const { colors } = useTheme();
   const [phase, setPhase] = useState<Phase>('location');
   const [locationGranted, setLocationGranted] = useState(false);
+  const [backgroundGranted, setBackgroundGranted] = useState(false);
   const [notificationsGranted, setNotificationsGranted] = useState(false);
   const [settingsBanner, setSettingsBanner] = useState(false);
 
@@ -24,16 +28,25 @@ export default function PermissionsScreen() {
 
   async function checkPermissions() {
     const loc = await Location.getForegroundPermissionsAsync();
-    if (loc.granted) {
-      setLocationGranted(true);
+    if (!loc.granted) {
+      setPhase('location');
+      return;
+    }
+    setLocationGranted(true);
+
+    const bg = await Location.getBackgroundPermissionsAsync().catch(() => null);
+    if (bg?.granted) {
+      setBackgroundGranted(true);
       const notif = await Notifications.getPermissionsAsync();
       if (notif.granted) {
         setNotificationsGranted(true);
         setPhase('done');
-      } else {
-        setPhase('notifications');
+        return;
       }
+      setPhase('notifications');
+      return;
     }
+    setPhase('background');
   }
 
   const requestLocation = useCallback(async () => {
@@ -41,26 +54,29 @@ export default function PermissionsScreen() {
     const { granted } = await Location.requestForegroundPermissionsAsync();
     if (granted) {
       setLocationGranted(true);
-      setPhase('notifications');
+      setPhase('background');
     } else {
+      setSettingsBanner(true);
+    }
+  }, []);
+
+  const requestBackground = useCallback(async () => {
+    setSettingsBanner(false);
+    try {
+      const { granted } = await Location.requestBackgroundPermissionsAsync();
+      if (granted) {
+        setBackgroundGranted(true);
+        setPhase('notifications');
+      } else {
+        setSettingsBanner(true);
+      }
+    } catch {
       setSettingsBanner(true);
     }
   }, []);
 
   const requestNotifications = useCallback(async () => {
     setSettingsBanner(false);
-
-    if (Platform.OS === 'ios') {
-      const { granted } = await Notifications.requestPermissionsAsync();
-      if (granted) {
-        setNotificationsGranted(true);
-        setPhase('done');
-      } else {
-        setSettingsBanner(true);
-      }
-      return;
-    }
-
     const { granted } = await Notifications.requestPermissionsAsync();
     if (granted) {
       setNotificationsGranted(true);
@@ -71,7 +87,10 @@ export default function PermissionsScreen() {
   }, []);
 
   const skip = useCallback(() => {
+    setSettingsBanner(false);
     if (phase === 'location') {
+      setPhase('background');
+    } else if (phase === 'background') {
       setPhase('notifications');
     } else {
       setPhase('done');
@@ -84,7 +103,7 @@ export default function PermissionsScreen() {
         {phase === 'location' && (
           <>
             <View className='w-20 h-20 rounded-full bg-primary-50 items-center justify-center'>
-              <Crosshair size={40} color='#10B981' strokeWidth={1.5} />
+              <Crosshair size={40} color={colors.primary} strokeWidth={1.5} />
             </View>
             <Text variant='title-lg' className='text-center px-4'>
               Let us find you
@@ -107,10 +126,37 @@ export default function PermissionsScreen() {
           </>
         )}
 
+        {phase === 'background' && (
+          <>
+            <View className='w-20 h-20 rounded-full bg-primary-50 items-center justify-center'>
+              <MapPinned size={40} color={colors.primary} strokeWidth={1.5} />
+            </View>
+            <Text variant='title-lg' className='text-center px-4'>
+              Keep tracking going
+            </Text>
+            <Text
+              variant='body'
+              className='text-neutral-500 text-center px-8 leading-6'
+            >
+              Background location lets Stride record your route while your phone
+              is locked. Runs still work without it, but only while the app is
+              open.
+            </Text>
+            {settingsBanner && (
+              <View className='bg-amber-50 border border-amber-200 rounded-xl px-4 py-3 mx-4'>
+                <Text variant='body-sm' className='text-amber-800 text-center'>
+                  Background location was declined. You can enable it later in
+                  Settings.
+                </Text>
+              </View>
+            )}
+          </>
+        )}
+
         {phase === 'notifications' && (
           <>
             <View className='w-20 h-20 rounded-full bg-primary-50 items-center justify-center'>
-              <Bell size={40} color='#10B981' strokeWidth={1.5} />
+              <Bell size={40} color={colors.primary} strokeWidth={1.5} />
             </View>
             <Text variant='title-lg' className='text-center px-4'>
               Stay in the loop
@@ -136,7 +182,7 @@ export default function PermissionsScreen() {
         {phase === 'done' && (
           <>
             <View className='w-20 h-20 rounded-full bg-primary-50 items-center justify-center'>
-              <ShieldCheck size={40} color='#10B981' strokeWidth={1.5} />
+              <ShieldCheck size={40} color={colors.primary} strokeWidth={1.5} />
             </View>
             <Text variant='title-lg' className='text-center px-4'>
               All set
@@ -145,7 +191,7 @@ export default function PermissionsScreen() {
               variant='body'
               className='text-neutral-500 text-center px-8 leading-6'
             >
-              {locationGranted && notificationsGranted
+              {locationGranted && backgroundGranted && notificationsGranted
                 ? 'All permissions are enabled. Time to hit the pavement!'
                 : 'You can change these anytime in your device settings.'}
             </Text>
@@ -159,6 +205,20 @@ export default function PermissionsScreen() {
             <Button title='Allow Location' onPress={requestLocation} />
             <Button
               title='Skip'
+              onPress={skip}
+              className='bg-transparent border border-neutral-200'
+            />
+          </>
+        )}
+
+        {phase === 'background' && (
+          <>
+            <Button
+              title='Allow Background Tracking'
+              onPress={requestBackground}
+            />
+            <Button
+              title='Not now'
               onPress={skip}
               className='bg-transparent border border-neutral-200'
             />
