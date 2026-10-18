@@ -1,4 +1,4 @@
-import { useAuth } from '@clerk/clerk-expo';
+import { useAuth } from '@clerk/expo';
 import { useMemo } from 'react';
 
 import { setSupabaseTokenGetter } from './client';

@@ -15,7 +15,6 @@
     "eas:update:dev": "eas update --profile development --environment development --branch development"
   },
   "dependencies": {
-    "@clerk/clerk-expo": "^2.20.0",
     "@clerk/expo": "^3.1.5",
     "@expo/metro-runtime": "~57.0.17",
     "@gorhom/bottom-sheet": "^5.2.14",
