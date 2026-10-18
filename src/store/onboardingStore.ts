@@ -12,7 +12,7 @@ export type RunnerLevel = 'beginner' | 'casual' | 'regular' | 'competitive';
 
 export type Gender = 'male' | 'female' | 'non_binary' | 'prefer_not_to_say';
 
-interface OnboardingProfile {
+export interface OnboardingProfile {
   name: string;
   birthDate: string | null;
   gender: Gender | null;

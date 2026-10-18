@@ -2,6 +2,8 @@ import { useUser } from '@clerk/expo';
 import { useOnboardingStore } from '@store/onboardingStore';
 import { useRouter } from 'expo-router';
 
+import { upsertProfile } from '../services/supabase/profiles';
+
 export function useOnboardingComplete() {
   const { user } = useUser();
   const router = useRouter();
@@ -24,6 +26,12 @@ export function useOnboardingComplete() {
         },
       },
     });
+
+    try {
+      await upsertProfile(user, profile);
+    } catch (error) {
+      console.warn('[profiles] upsert failed', error);
+    }
 
     reset();
     router.replace('/(tabs)/home');
