@@ -129,6 +129,7 @@ Profiles: `development` (dev client), `preview` (internal), `production` (auto-i
 - **No jest setup file**
 - **MSW** is a devDependency but not configured
 - **Maestro** E2E at `.maestro/home.yaml`
+- if its a minor feature or component there's no need to create a test for it
 
 ## Commit policy
 
