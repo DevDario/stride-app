@@ -1,5 +1,5 @@
 import * as Location from 'expo-location';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 
 import { LOCATION_TASK_NAME } from '../../../tasks/locationTask';
 import { useRunSessionStore } from '../run/RunSession';
@@ -16,9 +16,23 @@ const LOCATION_TASK_OPTIONS: Location.LocationTaskOptions = {
   },
 };
 
+const FOREGROUND_WATCH_OPTIONS: Location.LocationOptions = {
+  accuracy: Location.Accuracy.BestForNavigation,
+  distanceInterval: 5,
+  timeInterval: 1000,
+};
+
 export function useRunTracking() {
   const store = useRunSessionStore();
   const [tick, setTick] = useState(0);
+  const foregroundSubRef = useRef<Location.LocationSubscription | null>(null);
+
+  useEffect(() => {
+    return () => {
+      foregroundSubRef.current?.remove();
+      foregroundSubRef.current = null;
+    };
+  }, []);
 
   useEffect(() => {
     if (store.state !== 'running') return;
@@ -55,7 +69,29 @@ export function useRunTracking() {
     return store.coordinates[store.coordinates.length - 1];
   }, [store.coordinates]);
 
+  function stopForegroundUpdates() {
+    foregroundSubRef.current?.remove();
+    foregroundSubRef.current = null;
+  }
+
+  async function startForegroundUpdates(): Promise<void> {
+    stopForegroundUpdates();
+    foregroundSubRef.current = await Location.watchPositionAsync(
+      FOREGROUND_WATCH_OPTIONS,
+      (location) => {
+        const session = useRunSessionStore.getState();
+        if (session.state !== 'running') return;
+        session.addCoordinate({
+          latitude: location.coords.latitude,
+          longitude: location.coords.longitude,
+          timestamp: location.timestamp,
+        });
+      }
+    );
+  }
+
   async function startLocationUpdates(): Promise<boolean> {
+    stopForegroundUpdates();
     try {
       const hasBackground =
         await Location.hasStartedLocationUpdatesAsync(LOCATION_TASK_NAME);
@@ -68,8 +104,20 @@ export function useRunTracking() {
       );
       return true;
     } catch (error) {
-      console.warn('Failed to start location updates:', error);
-      return false;
+      console.warn(
+        'Background location updates unavailable, falling back to foreground tracking:',
+        error
+      );
+      try {
+        await startForegroundUpdates();
+        return true;
+      } catch (foregroundError) {
+        console.warn(
+          'Failed to start foreground location updates:',
+          foregroundError
+        );
+        return false;
+      }
     }
   }
 
@@ -91,6 +139,7 @@ export function useRunTracking() {
       if (hasBackground) {
         await Location.stopLocationUpdatesAsync(LOCATION_TASK_NAME);
       }
+      stopForegroundUpdates();
       store.pauseRun();
       return true;
     } catch (error) {
@@ -100,22 +149,10 @@ export function useRunTracking() {
   }
 
   async function resumeRun(): Promise<boolean> {
-    try {
-      const hasBackground =
-        await Location.hasStartedLocationUpdatesAsync(LOCATION_TASK_NAME);
-      if (hasBackground) {
-        await Location.stopLocationUpdatesAsync(LOCATION_TASK_NAME);
-      }
-      await Location.startLocationUpdatesAsync(
-        LOCATION_TASK_NAME,
-        LOCATION_TASK_OPTIONS
-      );
-      store.resumeRun();
-      return true;
-    } catch (error) {
-      console.warn('Failed to resume run:', error);
-      return false;
-    }
+    const ok = await startLocationUpdates();
+    if (!ok) return false;
+    store.resumeRun();
+    return true;
   }
 
   async function stopRun() {
@@ -124,6 +161,7 @@ export function useRunTracking() {
     if (hasBackground) {
       await Location.stopLocationUpdatesAsync(LOCATION_TASK_NAME);
     }
+    stopForegroundUpdates();
     store.stopRun();
   }
 

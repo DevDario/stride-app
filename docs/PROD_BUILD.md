@@ -179,6 +179,35 @@ launch. **Do not remove this.**
 
 ---
 
+## 8. Foreground location fallback
+
+**What changed.** `startLocationUpdates` in
+`src/features/map/hooks/useRunTracking.ts` tries
+`Location.startLocationUpdatesAsync` and, on failure, falls back to
+`Location.watchPositionAsync` with a foreground subscription that writes into
+the same session store.
+
+**Why.** `startLocationUpdatesAsync` refuses to run unless the host app has
+`location` in `UIBackgroundModes`. Expo Go's Info.plist does not, so the call
+throws `LocationUpdatesUnavailable: Background location has not been
+configured`. Before this fallback, that error made starting a run impossible
+in Expo Go, because the run tracker had no other source of coordinates.
+
+This is the reason §3 could be relaxed at all. The permission gate and the
+fallback are two halves of the same fix.
+
+**To restore.** Nothing to remove. Keep the fallback, because it is correct
+behaviour whenever background location is denied or unavailable, including on
+a production build where the user declined the Always permission. What changes
+in production is that background should usually succeed, so the fallback
+becomes the rare path rather than the default one.
+
+Worth adding on production: a visible indicator when the tracker is running
+foreground-only, so a user who declined background permission is not misled
+into thinking the run is being recorded with the phone locked.
+
+---
+
 ## Production checklist
 
 - [ ] Decide MapLibre vs `react-native-maps` + Google Maps provider (§1)
@@ -187,6 +216,7 @@ launch. **Do not remove this.**
 - [ ] Configure `androidForegroundServiceIcon` + `isAndroidForegroundServiceEnabled` (§4)
 - [ ] Swap AsyncStorage → MMKV (§5)
 - [ ] Implement live-run recovery for cold-started background events (§6)
+- [ ] Add a foreground-only indicator to the running UI (§8)
 - [ ] Verify `UIBackgroundModes` includes `location` in the built `Info.plist`
       (the `expo-location` plugin injects this automatically)
 - [ ] Verify `NSLocationAlwaysAndWhenInUseUsageDescription` lands in the built
