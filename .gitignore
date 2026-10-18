@@ -26,3 +26,6 @@ ios/
 
 expo-env.d.ts
 # @end expo-cli
+
+# Local backend design scratchpad, not committed
+docs/SCHEMA.md
