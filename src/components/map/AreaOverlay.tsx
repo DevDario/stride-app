@@ -1,10 +1,18 @@
-import { GeoJSONSource, Layer } from '@maplibre/maplibre-react-native';
+import { Polygon } from 'react-native-maps';
 
 type RatingLevel = 1 | 2 | 3 | 4 | 5;
 
+type AreaGeometry =
+  | { type: 'Polygon'; coordinates: [number, number][][] }
+  | { type: 'MultiPolygon'; coordinates: [number, number][][][] };
+
 interface AreaOverlayProps {
   id: string;
-  geoJson: GeoJSON.Feature<GeoJSON.Polygon | GeoJSON.MultiPolygon>;
+  geoJson: {
+    type: 'Feature';
+    properties: Record<string, unknown>;
+    geometry: AreaGeometry;
+  };
   rating: RatingLevel;
   opacity?: number;
 }
@@ -25,6 +33,18 @@ const RATING_OPACITIES: Record<RatingLevel, number> = {
   5: 0.2,
 };
 
+function hexToRgba(hex: string, alpha: number): string {
+  const value = hex.replace('#', '');
+  const r = parseInt(value.slice(0, 2), 16);
+  const g = parseInt(value.slice(2, 4), 16);
+  const b = parseInt(value.slice(4, 6), 16);
+  return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+}
+
+function toLatLngs(ring: [number, number][]) {
+  return ring.map(([longitude, latitude]) => ({ latitude, longitude }));
+}
+
 export function AreaOverlay({
   id,
   geoJson,
@@ -32,29 +52,24 @@ export function AreaOverlay({
   opacity = 1,
 }: AreaOverlayProps) {
   const fillOpacity = RATING_OPACITIES[rating] * opacity;
+  const color = hexToRgba(RATING_COLORS[rating], fillOpacity);
+
+  const rings: [number, number][][] =
+    geoJson.geometry.type === 'Polygon'
+      ? geoJson.geometry.coordinates.slice(0, 1)
+      : geoJson.geometry.coordinates.map((polygon) => polygon[0]);
+
   return (
-    <GeoJSONSource
-      id={`${id}-source`}
-      data={{
-        type: 'FeatureCollection',
-        features: [
-          {
-            ...geoJson,
-            properties: { rating },
-          },
-        ],
-      }}
-    >
-      <Layer
-        type='fill'
-        id={`${id}-fill`}
-        source={`${id}-source`}
-        paint={{
-          'fill-color': RATING_COLORS[rating],
-          'fill-opacity': fillOpacity,
-          'fill-outline-color': RATING_COLORS[rating],
-        }}
-      />
-    </GeoJSONSource>
+    <>
+      {rings.map((ring, index) => (
+        <Polygon
+          key={`${id}-${index}`}
+          coordinates={toLatLngs(ring)}
+          fillColor={color}
+          strokeColor={color}
+          strokeWidth={2}
+        />
+      ))}
+    </>
   );
 }

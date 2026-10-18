@@ -1,6 +1,6 @@
-import { Marker } from '@maplibre/maplibre-react-native';
 import { LandPlot } from 'lucide-react-native';
 import { Text, View } from 'react-native';
+import { Marker } from 'react-native-maps';
 import { useTheme } from 'src/theme/ThemeProvider';
 
 import type { ChallengeMarker } from '../types/map.types';
@@ -15,7 +15,15 @@ export function ChallengesLayer({ challenges }: ChallengesLayerProps) {
   return (
     <>
       {challenges.map((ch) => (
-        <Marker key={ch.id} id={ch.id} lngLat={ch.coordinate}>
+        <Marker
+          key={ch.id}
+          identifier={ch.id}
+          coordinate={{
+            latitude: ch.coordinate[1],
+            longitude: ch.coordinate[0],
+          }}
+          anchor={{ x: 0.5, y: 1 }}
+        >
           <View style={{ alignItems: 'center' }}>
             <LandPlot size={20} color={colors.primary} />
             <Text

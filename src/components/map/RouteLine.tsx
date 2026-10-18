@@ -1,4 +1,4 @@
-import { GeoJSONSource, Layer } from '@maplibre/maplibre-react-native';
+import { Polyline } from 'react-native-maps';
 
 interface RouteLineProps {
   id: string;
@@ -8,37 +8,21 @@ interface RouteLineProps {
 }
 
 export function RouteLine({
-  id,
   coordinates,
   color = '#3B82F6',
   width = 4,
 }: RouteLineProps) {
   return (
-    <GeoJSONSource
-      id={`${id}-source`}
-      data={{
-        type: 'Feature',
-        properties: {},
-        geometry: {
-          type: 'LineString',
-          coordinates,
-        },
-      }}
-    >
-      <Layer
-        type='line'
-        id={`${id}-line`}
-        source={`${id}-source`}
-        paint={{
-          'line-color': color,
-          'line-width': width,
-          'line-opacity': 0.9,
-        }}
-        layout={{
-          'line-cap': 'round',
-          'line-join': 'round',
-        }}
-      />
-    </GeoJSONSource>
+    <Polyline
+      coordinates={coordinates.map(([longitude, latitude]) => ({
+        latitude,
+        longitude,
+      }))}
+      strokeColor={color}
+      strokeWidth={width}
+      lineCap='round'
+      lineJoin='round'
+      geodesic
+    />
   );
 }

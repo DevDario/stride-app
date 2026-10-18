@@ -2,6 +2,7 @@ import type { StrideMapViewRef } from '@components/map/MapView';
 import * as Location from 'expo-location';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Alert as RNAlert, Linking } from 'react-native';
+import type { MapPressEvent } from 'react-native-maps';
 import { useLocationStore } from 'src/features/map/store/locationStore';
 import { pointInPolygon } from 'src/utils/geo';
 
@@ -333,11 +334,9 @@ export function useMapViewModel() {
   );
 
   const handleMapPress = useCallback(
-    (e: any) => {
+    (e: MapPressEvent) => {
       if (!isIdle || !activeLayers.has('areaRatings')) return;
-      const ll = e.nativeEvent.lngLat;
-      const lng = Array.isArray(ll) ? ll[0] : ll.lng;
-      const lat = Array.isArray(ll) ? ll[1] : ll.lat;
+      const { latitude: lat, longitude: lng } = e.nativeEvent.coordinate;
 
       const district = LUANDA_DISTRICTS.find((d) =>
         pointInPolygon([lng, lat], d.polygon)

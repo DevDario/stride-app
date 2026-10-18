@@ -60,7 +60,6 @@
           "locationWhenInUsePermission": "Stride needs your location to show your position on the map and track runs."
         }
       ],
-      "@maplibre/maplibre-react-native",
       "expo-notifications",
       "expo-status-bar"
     ],

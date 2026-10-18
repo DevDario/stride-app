@@ -1,19 +1,46 @@
-import { Camera, Map } from '@maplibre/maplibre-react-native';
 import { forwardRef, useImperativeHandle, useRef, type ReactNode } from 'react';
 import { StyleSheet } from 'react-native';
+import MapView, {
+  MAP_TYPES,
+  type MapPressEvent,
+  type MapStyleElement,
+  type Region,
+} from 'react-native-maps';
 
 const LUANDA_CENTER: [number, number] = [13.234444, -8.838333];
 const DEFAULT_ZOOM = 11;
 
-export const MAP_STYLES = {
-  dark: 'https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json',
-  darkNoLabels:
-    'https://basemaps.cartocdn.com/gl/dark-matter-nolabels-gl-style/style.json',
-  light: 'https://basemaps.cartocdn.com/gl/positron-gl-style/style.json',
-  fallback: 'https://api.protomaps.com/styles/v5/black/en.json',
-} as const;
+export const DARK_MAP_STYLE: MapStyleElement[] = [
+  {
+    featureType: 'all',
+    elementType: 'labels',
+    stylers: [{ visibility: 'off' }],
+  },
+  {
+    featureType: 'administrative',
+    elementType: 'labels',
+    stylers: [{ visibility: 'off' }],
+  },
+  { featureType: 'poi', stylers: [{ visibility: 'off' }] },
+  { featureType: 'transit', stylers: [{ visibility: 'off' }] },
+  { featureType: 'landscape', stylers: [{ color: '#1a1a1f' }] },
+  { featureType: 'road', stylers: [{ color: '#2d2d34' }] },
+  { featureType: 'water', stylers: [{ color: '#101014' }] },
+];
 
-const DEFAULT_MAP_STYLE = MAP_STYLES.dark;
+function zoomToDelta(zoom: number): number {
+  return 360 / Math.pow(2, zoom);
+}
+
+function toRegion(center: [number, number], zoom: number): Region {
+  const delta = zoomToDelta(zoom);
+  return {
+    latitude: center[1],
+    longitude: center[0],
+    latitudeDelta: delta,
+    longitudeDelta: delta,
+  };
+}
 
 export interface StrideMapViewRef {
   flyTo: (center: [number, number], zoom?: number, pitch?: number) => void;
@@ -27,67 +54,50 @@ export interface StrideMapViewRef {
 
 interface MapViewProps {
   children?: ReactNode;
-  mapStyle?: string | object;
   centerCoordinate?: [number, number];
   zoomLevel?: number;
-  onPress?: (e: any) => void;
+  onPress?: (e: MapPressEvent) => void;
 }
 
 export const StrideMapView = forwardRef<StrideMapViewRef, MapViewProps>(
   function StrideMapView(
     {
       children,
-      mapStyle = DEFAULT_MAP_STYLE,
       centerCoordinate = LUANDA_CENTER,
       zoomLevel = DEFAULT_ZOOM,
       onPress,
     },
     ref
   ) {
-    const cameraRef = useRef<any>(null);
+    const mapRef = useRef<MapView>(null);
 
     useImperativeHandle(ref, () => ({
-      flyTo: (center: [number, number], zoom?: number, pitch?: number) => {
-        cameraRef.current?.flyTo({
-          center,
-          zoom: zoom ?? DEFAULT_ZOOM,
-          pitch: pitch ?? 0,
-          duration: 1000,
-        });
+      flyTo: (center: [number, number], zoom: number = DEFAULT_ZOOM) => {
+        mapRef.current?.animateToRegion(toRegion(center, zoom), 1000);
       },
       easeTo: (
         center: [number, number],
-        zoom?: number,
-        pitch?: number,
-        duration?: number
+        zoom: number = DEFAULT_ZOOM,
+        _pitch?: number,
+        duration: number = 2000
       ) => {
-        cameraRef.current?.easeTo({
-          center,
-          zoom: zoom ?? DEFAULT_ZOOM,
-          pitch: pitch ?? 0,
-          duration: duration ?? 2000,
-        });
+        mapRef.current?.animateToRegion(toRegion(center, zoom), duration);
       },
     }));
 
     return (
-      <Map
+      <MapView
+        ref={mapRef}
         style={styles.map}
-        mapStyle={mapStyle as never}
-        logo
-        attribution
-        androidView='texture'
+        mapType={MAP_TYPES.STANDARD}
+        customMapStyle={DARK_MAP_STYLE}
+        initialRegion={toRegion(centerCoordinate, zoomLevel)}
         onPress={onPress}
+        showsCompass
+        showsScale
       >
-        <Camera
-          ref={cameraRef}
-          initialViewState={{
-            center: centerCoordinate,
-            zoom: zoomLevel,
-          }}
-        />
         {children}
-      </Map>
+      </MapView>
     );
   }
 );
