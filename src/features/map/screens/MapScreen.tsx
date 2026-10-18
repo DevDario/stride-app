@@ -81,7 +81,7 @@ function CountdownNumber({
 
 const countdownStyles = StyleSheet.create({
   container: {
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.absoluteFill,
     alignItems: 'center',
     justifyContent: 'center',
     zIndex: 100,
@@ -96,7 +96,7 @@ const countdownStyles = StyleSheet.create({
   },
 });
 
-export function MapScreen() {
+export const MapScreen = () => {
   const { colors } = useTheme();
   const router = useRouter();
   const insets = useSafeAreaInsets();
@@ -258,7 +258,7 @@ export function MapScreen() {
       />
     </View>
   );
-}
+};
 
 const startButtonStyles = StyleSheet.create({
   button: {

@@ -25,11 +25,6 @@
     "ios": {
       "bundleIdentifier": "com.dariosilva.strideapp"
     },
-    "splash": {
-      "image": "./src/assets/images/splash-screen.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#43917F"
-    },
     "plugins": [
       "expo-localization",
       "expo-router",
@@ -66,7 +61,8 @@
         }
       ],
       "@maplibre/maplibre-react-native",
-      "expo-notifications"
+      "expo-notifications",
+      "expo-status-bar"
     ],
     "experiments": {
       "typedRoutes": true
