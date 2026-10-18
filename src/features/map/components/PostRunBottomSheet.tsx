@@ -1,5 +1,4 @@
 import BottomSheet, { BottomSheetView } from '@gorhom/bottom-sheet';
-import { Camera, Map } from '@maplibre/maplibre-react-native';
 import { Flag, Share2, Star, Trophy } from 'lucide-react-native';
 import {
   forwardRef,
@@ -9,7 +8,7 @@ import {
   useRef,
 } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
-import { MAP_STYLES } from 'src/components/map/MapView';
+import { StrideMapView } from 'src/components/map/MapView';
 import { RouteLine } from 'src/components/map/RouteLine';
 import { useTheme } from 'src/theme/ThemeProvider';
 
@@ -105,29 +104,17 @@ export const PostRunBottomSheet = forwardRef<
         <ScrollView showsVerticalScrollIndicator={false}>
           {coordinates.length > 1 && region && (
             <View style={styles.mapPreview}>
-              <Map
-                style={styles.map}
-                mapStyle={MAP_STYLES.dark as never}
-                logo={false}
-                attribution={false}
+              <StrideMapView
+                centerCoordinate={region.center}
+                zoomLevel={Math.log2(360 / region.lngDelta)}
               >
-                <Camera
-                  bounds={[
-                    region.center[0] - region.lngDelta / 2,
-                    region.center[1] - region.latDelta / 2,
-                    region.center[0] + region.lngDelta / 2,
-                    region.center[1] + region.latDelta / 2,
-                  ]}
-                  padding={{ top: 40, bottom: 40, left: 40, right: 40 }}
-                  pitch={60}
-                />
                 <RouteLine
                   id='run-route'
                   coordinates={lngLatCoords}
                   color='#10B981'
                   width={3}
                 />
-              </Map>
+              </StrideMapView>
             </View>
           )}
 
@@ -262,9 +249,6 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     overflow: 'hidden',
     marginBottom: 16,
-  },
-  map: {
-    flex: 1,
   },
   statsGrid: {
     flexDirection: 'row',

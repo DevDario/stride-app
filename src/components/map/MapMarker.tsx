@@ -1,5 +1,5 @@
-import { Marker } from '@maplibre/maplibre-react-native';
 import { useEffect, type ReactNode } from 'react';
+import { Marker } from 'react-native-maps';
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
@@ -33,7 +33,12 @@ export function MapMarker({ id, lngLat, children }: MapMarkerProps) {
   }));
 
   return (
-    <Marker id={id} lngLat={lngLat}>
+    <Marker
+      identifier={id}
+      coordinate={{ latitude: lngLat[1], longitude: lngLat[0] }}
+      anchor={{ x: 0.5, y: 0.5 }}
+      flat
+    >
       <Animated.View style={animatedStyle}>{children}</Animated.View>
     </Marker>
   );

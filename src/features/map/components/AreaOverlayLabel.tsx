@@ -1,7 +1,7 @@
-import { Marker } from '@maplibre/maplibre-react-native';
 import { Star } from 'lucide-react-native';
 import { useEffect } from 'react';
 import { Text, View } from 'react-native';
+import { Marker } from 'react-native-maps';
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
@@ -36,7 +36,12 @@ export function AreaOverlayLabel({
   }));
 
   return (
-    <Marker id={areaId} lngLat={centroid}>
+    <Marker
+      identifier={areaId}
+      coordinate={{ latitude: centroid[1], longitude: centroid[0] }}
+      anchor={{ x: 0.5, y: 0.5 }}
+      flat
+    >
       <Animated.View style={animatedStyle}>
         <View
           style={{

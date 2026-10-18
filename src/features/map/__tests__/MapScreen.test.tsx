@@ -35,22 +35,31 @@ jest.mock('@gorhom/bottom-sheet', () => {
   };
 });
 
-jest.mock('@maplibre/maplibre-react-native', () => ({
-  Map: ({ children }: { children: React.ReactNode }) => <>{children}</>,
-  Camera: () => null,
-  Marker: () => null,
-  UserLocation: () => null,
-  GeoJSONSource: () => null,
-  Layer: () => null,
-  Images: () => null,
-}));
+jest.mock('react-native-maps', () => {
+  const MockMapView = ({ children }: { children: React.ReactNode }) => (
+    <>{children}</>
+  );
+  return {
+    __esModule: true,
+    default: MockMapView,
+    Marker: () => null,
+    Polygon: () => null,
+    Polyline: () => null,
+    Circle: () => null,
+    Geojson: () => null,
+    Callout: () => null,
+    MAP_TYPES: { STANDARD: 'standard' },
+    PROVIDER_DEFAULT: null,
+    PROVIDER_GOOGLE: 'google',
+  };
+});
 
 jest.mock('../../../components/map/MapView', () => ({
   __esModule: true,
   StrideMapView: ({ children }: { children: React.ReactNode }) => (
     <>{children}</>
   ),
-  MAP_STYLES: { dark: 'dark' },
+  DARK_MAP_STYLE: [],
 }));
 
 jest.mock('../../../components/map/PermissionGate', () => ({

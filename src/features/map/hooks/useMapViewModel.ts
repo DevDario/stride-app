@@ -2,6 +2,7 @@ import type { StrideMapViewRef } from '@components/map/MapView';
 import * as Location from 'expo-location';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Alert as RNAlert, Linking } from 'react-native';
+import type { MapPressEvent } from 'react-native-maps';
 import { useLocationStore } from 'src/features/map/store/locationStore';
 import { pointInPolygon } from 'src/utils/geo';
 
@@ -333,11 +334,9 @@ export function useMapViewModel() {
   );
 
   const handleMapPress = useCallback(
-    (e: any) => {
+    (e: MapPressEvent) => {
       if (!isIdle || !activeLayers.has('areaRatings')) return;
-      const ll = e.nativeEvent.lngLat;
-      const lng = Array.isArray(ll) ? ll[0] : ll.lng;
-      const lat = Array.isArray(ll) ? ll[1] : ll.lat;
+      const { latitude: lat, longitude: lng } = e.nativeEvent.coordinate;
 
       const district = LUANDA_DISTRICTS.find((d) =>
         pointInPolygon([lng, lat], d.polygon)
@@ -357,29 +356,40 @@ export function useMapViewModel() {
   );
 
   const handleStart = useCallback(async () => {
-    const bg = await Location.getBackgroundPermissionsAsync();
-    if (!bg.granted) {
-      if (!bg.canAskAgain) {
-        await new Promise<void>((resolve) => {
-          RNAlert.alert(
-            'Background location needed',
-            'Enable "Allow all the time" location in Settings to track runs in the background.',
-            [
-              { text: 'Cancel', style: 'cancel', onPress: () => resolve() },
-              {
-                text: 'Open Settings',
-                onPress: () => {
-                  Linking.openSettings();
-                  resolve();
-                },
-              },
-            ]
-          );
-        });
-        return;
+    let foreground: Location.LocationPermissionResponse | null = null;
+    try {
+      foreground = await Location.getForegroundPermissionsAsync();
+    } catch {
+      foreground = null;
+    }
+
+    if (!foreground?.granted) {
+      try {
+        foreground = await Location.requestForegroundPermissionsAsync();
+      } catch {
+        foreground = null;
       }
-      const result = await Location.requestBackgroundPermissionsAsync();
-      if (!result.granted) return;
+    }
+
+    if (!foreground?.granted) {
+      RNAlert.alert(
+        'Location access needed',
+        'Allow location access while using the app to start your run.',
+        [
+          { text: 'Cancel', style: 'cancel' },
+          { text: 'Open Settings', onPress: () => Linking.openSettings() },
+        ]
+      );
+      return;
+    }
+
+    try {
+      const bg = await Location.getBackgroundPermissionsAsync();
+      if (!bg.granted && bg.canAskAgain) {
+        await Location.requestBackgroundPermissionsAsync();
+      }
+    } catch {
+      // Background permission unavailable, e.g. Expo Go. Track foreground only.
     }
 
     const started = await tracking.startLocationUpdates();

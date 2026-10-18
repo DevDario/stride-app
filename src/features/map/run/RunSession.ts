@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 
+import { useRunHistoryStore } from './runHistoryStore';
 import type { Coordinate, RunState } from '../types/map.types';
 
 function haversineDistance(
@@ -78,16 +79,34 @@ export const useRunSessionStore = create<RunSessionState>((set, get) => ({
   },
 
   stopRun: () => {
-    const { startedAt, pausedAt, totalPausedDuration } = get();
-    if (startedAt !== null) {
-      const pause =
-        totalPausedDuration + (pausedAt !== null ? Date.now() - pausedAt : 0);
-      set({
-        state: 'finished',
-        finalElapsedTime: Math.floor((Date.now() - startedAt - pause) / 1000),
+    const {
+      startedAt,
+      pausedAt,
+      totalPausedDuration,
+      coordinates,
+      distance,
+      challengeId,
+    } = get();
+    const finishedAt = Date.now();
+    const pause =
+      totalPausedDuration + (pausedAt !== null ? finishedAt - pausedAt : 0);
+    const finalElapsedTime =
+      startedAt !== null
+        ? Math.floor((finishedAt - startedAt - pause) / 1000)
+        : 0;
+
+    set({ state: 'finished', finalElapsedTime });
+
+    if (startedAt !== null && coordinates.length > 0) {
+      useRunHistoryStore.getState().addRun({
+        id: String(startedAt),
+        startedAt,
+        finishedAt,
+        durationSec: finalElapsedTime,
+        distanceM: distance,
+        coordinates,
+        challengeId,
       });
-    } else {
-      set({ state: 'finished', finalElapsedTime: 0 });
     }
   },
 
