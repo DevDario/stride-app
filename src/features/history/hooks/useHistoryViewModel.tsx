@@ -51,7 +51,7 @@ export function useHistoryViewModel() {
       ...profile,
       handle: clerkName ? `@${clerkName.toLowerCase()}` : profile.handle,
       initials: clerkInitial ?? profile.initials,
-      avatarUrl: clerkAvatar,
+      avatarUrl: clerkAvatar ?? undefined,
     };
   }, [profile, clerkName, clerkInitial, clerkAvatar]);
 

@@ -175,4 +175,8 @@ const styles = StyleSheet.create({
     gap: 8,
     height: 40,
   },
+  chip: {
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
 });
