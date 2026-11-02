@@ -18,6 +18,8 @@ ios/
 .cursorrules
 .cursorrules.md
 
+.zed/
+
 android/
 ios/
 
@@ -27,5 +29,6 @@ ios/
 expo-env.d.ts
 # @end expo-cli
 
-# Local backend design scratchpad, not committed
+# Local backend design
 docs/SCHEMA.md
+docs/SUPABASE_MIGRATION.md
