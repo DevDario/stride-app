@@ -1,5 +1,6 @@
 import { useSignIn, useSSO } from '@clerk/expo';
 import { Button } from '@components/Button';
+import { Screen } from '@components/Screen';
 import { Text } from '@components/Text';
 import { StyledTextInput } from '@components/TextInput';
 import * as Linking from 'expo-linking';
@@ -102,10 +103,17 @@ export default function LoginScreen() {
   }
 
   return (
-    <View className='flex-1 bg-neutral-0 px-6 justify-center gap-6'>
-      <Text variant='title-lg' className='flex text-center items-center'>
-        {pendingVerification ? 'Verification Required' : 'Login'}
-      </Text>
+    <Screen className='px-6 justify-center gap-6'>
+      <View className='flex items-center gap-px'>
+        <Text variant='title-lg' className='flex text-center items-center'>
+          {pendingVerification ? 'Verification Required' : 'Welcome Back!'}
+        </Text>
+        <Text variant='body' className='flex text-center items-center'>
+          {pendingVerification
+            ? 'We need you to verify your account before continuing'
+            : 'Be ready for new challenges.'}
+        </Text>
+      </View>
 
       {pendingVerification ? (
         <View className='gap-4'>
@@ -163,6 +171,10 @@ export default function LoginScreen() {
 
           <Button title='Login' onPress={handleLogin} loading={isLoading} />
 
+          <Text variant='body' className='flex text-center items-center'>
+            or
+          </Text>
+
           <View className='gap-3'>
             <Button
               title='Continue with Google'
@@ -193,6 +205,6 @@ export default function LoginScreen() {
           </Pressable>
         </>
       )}
-    </View>
+    </Screen>
   );
 }

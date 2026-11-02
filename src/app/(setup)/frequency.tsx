@@ -1,3 +1,4 @@
+import { BackButton } from '@components/BackButton';
 import { Button } from '@components/Button';
 import { Text } from '@components/Text';
 import { useOnboardingStore } from '@store/onboardingStore';
@@ -46,7 +47,9 @@ export default function FrequencyScreen() {
   }));
 
   return (
-    <View className='flex-1 bg-neutral-0 px-6 pt-16 pb-12 justify-between'>
+    <View className='flex-1 bg-neutral-0 px-6 pb-12 justify-between'>
+      <BackButton />
+
       <GestureDetector gesture={gesture}>
         <View className='flex-1 gap-10 items-center justify-center'>
           <Text variant='title-lg' className='absolute top-0 left-0'>
@@ -60,7 +63,7 @@ export default function FrequencyScreen() {
                   style={[
                     {
                       fontSize: 170,
-                      fontWeight: '900',
+                      fontFamily: 'DaysOne_400Regular',
                       color: tokens.colors.light.text,
                       lineHeight: 170,
                     },

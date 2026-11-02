@@ -1,3 +1,4 @@
+import { BackButton } from '@components/BackButton';
 import { Button } from '@components/Button';
 import { Text } from '@components/Text';
 import { useOnboardingStore, type RunSchedule } from '@store/onboardingStore';
@@ -68,8 +69,10 @@ export default function ScheduleScreen() {
   const selected = profile.preferredSchedules;
 
   return (
-    <View className='flex-1 bg-neutral-0 pt-16 pb-12'>
+    <View className='flex-1 bg-neutral-0 pb-12'>
       <View className='px-6 gap-6 flex-1'>
+        <BackButton />
+
         <Text variant='title-lg'>When do you love to run?</Text>
 
         <ActiveIllustration selected={selected} />

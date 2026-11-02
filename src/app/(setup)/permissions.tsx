@@ -1,4 +1,5 @@
 import { useUser } from '@clerk/expo';
+import { BackButton } from '@components/BackButton';
 import { Button } from '@components/Button';
 import { Text } from '@components/Text';
 import * as Location from 'expo-location';
@@ -97,8 +98,16 @@ export default function PermissionsScreen() {
     }
   }, [phase]);
 
+  function handleBack() {
+    if (phase === 'background') setPhase('location');
+    else if (phase === 'notifications') setPhase('background');
+    else if (phase === 'done') setPhase('notifications');
+    else router.back();
+  }
+
   return (
-    <View className='flex-1 bg-neutral-0 px-6 pt-16 pb-12 justify-between'>
+    <View className='flex-1 bg-neutral-0 px-6 pb-12 justify-between'>
+      <BackButton onPress={handleBack} />
       <View className='flex-1 items-center justify-center gap-6'>
         {phase === 'location' && (
           <>
@@ -202,9 +211,14 @@ export default function PermissionsScreen() {
       <View className='gap-3 px-6'>
         {phase === 'location' && (
           <>
-            <Button title='Allow Location' onPress={requestLocation} />
+            <Button
+              title='Allow Location'
+              variant='primary'
+              onPress={requestLocation}
+            />
             <Button
               title='Skip'
+              variant='ghost'
               onPress={skip}
               className='bg-transparent border border-neutral-200'
             />
@@ -216,10 +230,12 @@ export default function PermissionsScreen() {
             <Button
               title='Allow Background Tracking'
               onPress={requestBackground}
+              variant='primary'
             />
             <Button
               title='Not now'
               onPress={skip}
+              variant='ghost'
               className='bg-transparent border border-neutral-200'
             />
           </>
@@ -229,10 +245,12 @@ export default function PermissionsScreen() {
           <>
             <Button
               title='Allow Notifications'
+              variant='primary'
               onPress={requestNotifications}
             />
             <Button
               title='Skip'
+              variant='ghost'
               onPress={skip}
               className='bg-transparent border border-neutral-200'
             />
@@ -243,6 +261,7 @@ export default function PermissionsScreen() {
           <>
             <Button
               title='Continue'
+              variant='primary'
               onPress={async () => {
                 try {
                   await user?.update({
@@ -259,6 +278,7 @@ export default function PermissionsScreen() {
             />
             {settingsBanner && (
               <Button
+                variant='secondary'
                 title='Open Settings'
                 onPress={() => Linking.openSettings()}
                 className='bg-transparent border border-neutral-200'

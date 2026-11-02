@@ -1,10 +1,12 @@
 import { useSignUp, useSSO } from '@clerk/expo';
 import { Button } from '@components/Button';
+import { Screen } from '@components/Screen';
 import { Text } from '@components/Text';
 import { StyledTextInput } from '@components/TextInput';
 import * as Linking from 'expo-linking';
 import { useRouter } from 'expo-router';
 import * as WebBrowser from 'expo-web-browser';
+import { ArrowUpRight } from 'lucide-react-native';
 import { useState } from 'react';
 import { View, Pressable } from 'react-native';
 
@@ -58,7 +60,7 @@ export default function SignupScreen() {
 
     if (signUp.status === 'complete') {
       await signUp.finalize({
-        navigate: () => router.replace('/(setup)/know-you'),
+        navigate: () => router.push('/(setup)/know-you'),
       });
     } else {
       setError('Sign-up incomplete. Please check requirements.');
@@ -84,10 +86,15 @@ export default function SignupScreen() {
   }
 
   return (
-    <View className='flex-1 bg-neutral-0 px-6 justify-center gap-6'>
-      <Text variant='title-lg'>
-        {pendingVerification ? 'Verify your email' : 'Create an account'}
-      </Text>
+    <Screen className='px-6 justify-center gap-6'>
+      <View className='flex items-left gap-px'>
+        <Text variant='title-lg' className='align-left justify-start'>
+          {pendingVerification ? 'Verify your email' : 'Create your account'}
+        </Text>
+        <Text variant='body' className='flex text-left items-start'>
+          Be ready to face new challenges everyday
+        </Text>
+      </View>
 
       {pendingVerification ? (
         <View className='gap-4'>
@@ -145,10 +152,14 @@ export default function SignupScreen() {
           )}
 
           <Button
-            title='Create account'
+            title='Create an account'
             onPress={handleSignup}
             loading={isLoading}
           />
+
+          <Text variant='body' className='flex text-center items-center'>
+            or
+          </Text>
 
           <View className='gap-3'>
             <Button
@@ -156,12 +167,14 @@ export default function SignupScreen() {
               onPress={() => handleOAuth('oauth_google')}
               loading={isLoading}
               variant='secondary'
+              icon={ArrowUpRight}
             />
             <Button
               title='Continue with Facebook'
               onPress={() => handleOAuth('oauth_facebook')}
               loading={isLoading}
               variant='secondary'
+              icon={ArrowUpRight}
             />
           </View>
 
@@ -178,6 +191,6 @@ export default function SignupScreen() {
           </Pressable>
         </>
       )}
-    </View>
+    </Screen>
   );
 }

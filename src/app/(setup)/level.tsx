@@ -1,3 +1,4 @@
+import { BackButton } from '@components/BackButton';
 import { Button } from '@components/Button';
 import { Text } from '@components/Text';
 import { useOnboardingStore, type RunnerLevel } from '@store/onboardingStore';
@@ -21,8 +22,9 @@ export default function LevelScreen() {
   const { profile, setLevel } = useOnboardingStore();
 
   return (
-    <View className='flex-1 bg-neutral-0 px-6 pt-16 pb-12 justify-between'>
+    <View className='flex-1 bg-neutral-0 px-6 pb-12 justify-between'>
       <View className='gap-8'>
+        <BackButton />
         <Text variant='title-lg'>What's your current level?</Text>
 
         <View className='gap-3'>
