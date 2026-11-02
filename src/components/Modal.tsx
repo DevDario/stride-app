@@ -1,10 +1,10 @@
-import React from 'react';
-import {
-  Modal as RNModal,
-  View,
-  TouchableWithoutFeedback,
-  StyleSheet,
-} from 'react-native';
+import BottomSheet, {
+  BottomSheetBackdrop,
+  type BottomSheetBackdropProps,
+  BottomSheetView,
+} from '@gorhom/bottom-sheet';
+import React, { useCallback } from 'react';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { useTheme } from '../theme/ThemeProvider';
 
@@ -12,81 +12,55 @@ export interface ModalProps {
   visible: boolean;
   onClose: () => void;
   children: React.ReactNode;
-  position?: 'center' | 'bottom';
+  snapPoints?: (number | string)[];
 }
 
 export const Modal: React.FC<ModalProps> = ({
   visible,
   onClose,
   children,
-  position = 'bottom',
+  snapPoints,
 }) => {
-  const { colors, radii, spacing } = useTheme();
+  const { colors, radii } = useTheme();
+  const insets = useSafeAreaInsets();
 
-  const isBottom = position === 'bottom';
+  const renderBackdrop = useCallback(
+    (props: BottomSheetBackdropProps) => (
+      <BottomSheetBackdrop
+        {...props}
+        opacity={0.4}
+        appearsOnIndex={0}
+        disappearsOnIndex={-1}
+        pressBehavior='close'
+      />
+    ),
+    []
+  );
 
   return (
-    <RNModal
-      visible={visible}
-      transparent
-      animationType={isBottom ? 'slide' : 'fade'}
-      onRequestClose={onClose}
+    <BottomSheet
+      index={visible ? 0 : -1}
+      snapPoints={snapPoints}
+      onClose={onClose}
+      enablePanDownToClose
+      enableDynamicSizing
+      backdropComponent={renderBackdrop}
+      backgroundStyle={{
+        backgroundColor: colors.background,
+        borderTopLeftRadius: radii.lg,
+        borderTopRightRadius: radii.lg,
+      }}
+      handleIndicatorStyle={{ backgroundColor: colors.border }}
     >
-      <TouchableWithoutFeedback onPress={onClose}>
-        <View style={styles.overlay}>
-          <TouchableWithoutFeedback>
-            <View
-              style={[
-                styles.content,
-                isBottom ? styles.bottomContent : styles.centerContent,
-                {
-                  backgroundColor: colors.background,
-                  padding: spacing.lg,
-                  borderTopLeftRadius: isBottom ? radii.lg : radii.md,
-                  borderTopRightRadius: isBottom ? radii.lg : radii.md,
-                  borderBottomLeftRadius: isBottom ? 0 : radii.md,
-                  borderBottomRightRadius: isBottom ? 0 : radii.md,
-                },
-              ]}
-            >
-              {isBottom && (
-                <View
-                  style={[styles.handle, { backgroundColor: colors.border }]}
-                />
-              )}
-              {children}
-            </View>
-          </TouchableWithoutFeedback>
-        </View>
-      </TouchableWithoutFeedback>
-    </RNModal>
+      <BottomSheetView
+        style={{
+          paddingTop: 8,
+          paddingHorizontal: 24,
+          paddingBottom: Math.max(insets.bottom, 24),
+        }}
+      >
+        {children}
+      </BottomSheetView>
+    </BottomSheet>
   );
 };
-
-const styles = StyleSheet.create({
-  overlay: {
-    flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    justifyContent: 'flex-end',
-  },
-  content: {
-    width: '100%',
-  },
-  bottomContent: {
-    paddingBottom: 40,
-  },
-  centerContent: {
-    width: '90%',
-    alignSelf: 'center',
-    marginBottom: 'auto',
-    marginTop: 'auto',
-  },
-  handle: {
-    width: 40,
-    height: 4,
-    borderRadius: 2,
-    alignSelf: 'center',
-    marginBottom: 20,
-    marginTop: -10,
-  },
-});

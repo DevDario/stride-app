@@ -27,7 +27,7 @@ export function StyledTextInput({
       <TextInput
         className={cn(
           'bg-neutral-50 border border-neutral-200 rounded-xl px-4 py-3',
-          'font-sans text-base text-neutral-900',
+          'font-sans text-[16px] text-neutral-900',
           'focus:border-primary-500',
           error && 'border-error',
           className

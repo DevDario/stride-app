@@ -13,12 +13,16 @@ import { useTheme } from '../theme/ThemeProvider';
 export interface ScreenProps extends ViewProps {
   children: React.ReactNode;
   safeArea?: boolean;
+  keyboardVerticalOffset?: number;
+  className?: string;
 }
 
 export const Screen: React.FC<ScreenProps> = ({
   children,
   safeArea = true,
+  keyboardVerticalOffset = 0,
   style,
+  className,
   ...rest
 }) => {
   const { colors } = useTheme();
@@ -27,12 +31,14 @@ export const Screen: React.FC<ScreenProps> = ({
 
   return (
     <Container
-      style={[styles.container, { backgroundColor: colors.background }, style]}
+      style={[styles.container, { backgroundColor: colors.background }]}
       {...rest}
     >
       <KeyboardAvoidingView
-        style={styles.keyboardAvoidingView}
+        className={className}
+        style={[styles.keyboardAvoidingView, style]}
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+        keyboardVerticalOffset={keyboardVerticalOffset}
       >
         {children}
       </KeyboardAvoidingView>
